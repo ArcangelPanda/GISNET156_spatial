@@ -1,0 +1,161 @@
+.no-space {
+  padding: 0%;
+  margin: 0%;
+}
+
+.SpatialComponent{
+  color:white;
+  background-color: black;
+}
+
+.Top{
+  color:white;
+  background-color: black;
+}
+
+.Middle{
+  color:white;
+  background-color: black;
+}
+
+.Right{
+  position: absolute;
+  margin-top: 0px;
+  margin-right: 0px;
+  color:black;
+  background-color:white;
+  width: 350px;
+  overflow-y: auto;
+  vertical-align: top;
+}
+
+.BackgroundContainer{
+  width:100%;
+  border-bottom:5px solid orange;
+  border-top:5px solid orange;
+}
+
+.MapViewContainer{
+  color:white;
+  height: 800px;
+  width: 100%;
+}
+
+.MenuBar {
+  color:white;
+  background-color: black;
+}
+
+.ButtonBar {
+  color:white;
+  background-color: black;
+}
+
+.ToolBar {
+  color:white;
+  background-color: black;
+}
+
+.MenuBarControl{
+  color:white;
+  background-color: black;
+}
+
+.ButtonBarControl{
+  color:white;
+  background-color: black;
+}
+
+.ToolBarControl{
+  color:white;
+  background-color: black;
+}
+
+.GroupContainer {
+  color:white;
+  background-color: black;
+}
+
+.GroupControl {
+  color:white;
+  background-color: black;
+  vertical-align: middle;
+}
+
+.LayerGroupContainer {
+  color:white;
+  background-color: black;
+}
+
+.GroupExpand {
+  color:white;
+  background-color: black;
+}
+
+.GroupVisible {
+  color:white;
+  background-color: black;
+}
+
+.GroupLabel{
+  color:white;
+  background-color: black;
+}
+
+.GroupTransparency{
+  color:white;
+  background-color: black;
+}
+
+.LayerContainer {
+  color:white;
+  background-color:grey;
+}
+
+.LayerControl {
+  color:white;
+  background-color: grey;
+  vertical-align: middle;
+}
+
+.LayerVisible {
+  color:white;
+  background-color: black;
+}
+
+.LayerSimbology{
+  color:white;
+  background-color: black;
+}
+
+.LayerLabel{
+  color:white;
+  background-color: grey;
+}
+
+.LayerTransparency{
+  color:white;
+  background-color: black;
+}
+
+.CC{
+  color:black;
+  background-color: darkgrey;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+  
+.slider{
+  
+}
+

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Componente Espacial</title>
+        <meta charset="utf-8">
+        <meta lang="es-MX">
+        <link rel="icon" href="./img/icon.png" type="image/png">
+        <link rel="stylesheet" href="./css/w3.css">
+        <link rel="stylesheet" href="./css/w3-theme-dark.css">
+        <link rel="stylesheet" href="./css/site.css">
+        <link rel="stylesheet" href="./lib/v6.14.1-dist/ol.css" type="text/css">
+        <link rel="stylesheet" href="./lib/fontawesome-free-5.9.0-web/css/all.css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="./lib/v6.14.1-dist/ol.js"></script>
+        <script src="./lib/proj4js-2.5.0/dist/proj4.js"></script>
+        <script src="./lib/turf.min.js"></script>
+        <script src="./lib/jsts.min.js"></script>
+        <script src="./lib/jszip/jszip.js"></script>
+    	<script src="./lib/jszip/preprocess.js"></script>
+        <script src="./lib/jszip/preview.js"></script>
+        <script src="./js/objects/styles.js"></script>
+        <script src="./js/objects/objMapa.js"></script>
+        <script src="./js/site.js"></script>
+    </head>
+    <body>
+        <div id="Mapa">
+        </div>
+        <div class="w3-display-left w3-round-large w3-card-4 w3-padding w3-text-black">
+            <i class="w3-button fas fa-lg fa-pencil-ruler w3-text-blue" data-toggle="tooltip" data-placement="top" title="Mostrar/Ocultar Herramientas auxiliares de dibujo"
+               onclick="document.getElementById('DrawTools').style.display = document.getElementById('DrawTools').style.display === 'block' ? 'none' : 'block';"></i>
+            <div id="DrawTools" style="display:none;">
+                <div class="Circle CCs form-inline" style="display:none;">
+                    Radio: <input id="Radio" type="number" min="0" value="0" step="0.01" style="text-align:right;width:100px;" /> m
+                </div>
+        
+                <div class="Point CCs form-inline" style="display:none;">
+                    Etiqueta: <input id="Etiqueta" style="text-align:right;" type="text"/>
+                </div>
+        
+                <div class="LineString Polygon CCs w3-small" style="display:none;">
+                    <div id="geometryToolBar" class="w3-bar" style="display:none;">
+                        <div class="w3-button">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                    </div>
+                    <table class="w3-table-all w3-hoverable w3-card-4 w3-responsive no-space">
+                        <thead>
+                            <tr class="theme-d2 w3-centered">
+                                <th class="w3-center" style="width:60px;"></th>
+                                <th class="w3-center" style="width:65px;">Vértice</th>
+                                <th class="w3-center" style="width:65px;">Ángulo</th>
+                                <th class="w3-center" style="width:115px;">Distancia</th>
+                                <th class="w3-center" style="width:115px;">X</th>
+                                <th class="w3-center" style="width:115px;">Y</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <table class="w3-table-all w3-hoverable w3-card-4 w3-responsive no-space" style="max-height:200px;">
+                        <tbody id="CCVertices" class="w3-responsive no-space">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+          </div>        
+        <div id="CargaShapefileContainer" class="w3-modal" style="display: none;">
+            <div class="w3-modal-content w3-animate-top w3-card-4">
+              <header class="w3-container w3-teal">
+                <span onclick="document.getElementById('CargaShapefileContainer').style.display='none'"
+                class="w3-button w3-display-topright">&times;</span>
+                <h2>Cargar Shapefile</h2>
+              </header>
+              <div class="w3-container">
+                      <p>Carga de archivos en formato de shapefile (ESRI), para realizar la carga el shapefile debe estar contenido en un archivo zip, y tener una referencia espacial WGS84 UTM 12N referida como EPSG:32612.</p>
+                            <label class="w3-block w3-green w3-button" for="file-upload"><i class="fas fa-file-zip-o"></i>Seleccione el Archivo Shapefile</label>
+                            <input id="file-upload" type="file" accept=".zip" onchange="oMapa.Actions.changeFile(event)" hidden>
+                            <label id="shpName" class="w3-padding"></label>
+              <footer class="w3-container w3-teal">
+                <button onclick="oMapa.Actions.ImportShp()" class="w3-button w3-right w3-black">Cargar</button>
+              </footer>
+            </div>
+        </div>
+    </body>
+    <script src="./js/index.js"></script>
+</html>

@@ -1,0 +1,14 @@
+{
+  "BackgroundColor": "#ffffff",
+  "SpatialReference": {
+    "SRID": "EPSG:32612",
+    "Units": null
+  },
+  "DefaultView": {
+    "X": 502102,
+    "Y": 3219128,
+    "DefaultZoom": 10
+  },
+  "Parameters" : [],
+  "Principal" : ["VectorPredioFusionado"]
+}

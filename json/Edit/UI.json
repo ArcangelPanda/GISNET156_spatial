@@ -1,0 +1,502 @@
+{
+    "Class" : "",
+    "Config":{
+        "Display":"Prefered Icons"
+    },
+    "MapView":{
+        "backgroundColor":"#000",
+        "Class" : "map no-space"
+    },
+    "MenuBar":null,
+    "ButtonBar":{
+        "Controls": {
+            "btnShowHideTOC": {
+                "identity": {
+                  "id": "btnShowHideTOC",
+                  "name": "TOC",
+                  "type": "button"
+                },
+                "help": {
+                  "tip": "Mostrar / Ocultar la Tabla de Contenido (TOC)",
+                  "urlTechHelp": null,
+                  "legalHelp": "www.google.com",
+                  "legalText": null
+                },
+                "style": {
+                  "icon": "fas fa-layer-group",
+                  "className": "w3-button",
+                  "text":null
+                },
+                "validation": {
+                  "authorization": null,
+                  "conditionEnable": null,
+                  "conditionShow": null
+                },
+                "actions": {
+                  "sourceFillList": null,
+                  "function": "oMapa.Actions.ShowHideTOC();"
+                }
+            },
+            "btnZoomToFullExtent": {
+              "identity": {
+                "id": "btnZoomToFullExtent",
+                "name": null,
+                "type": "button"
+              },
+              "help": {
+                "tip": "Ver toda el municipio",
+                "urlTechHelp": null,
+                "legalHelp": "www.google.com",
+                "legalText": null
+              },
+              "style": {
+                "icon": "fas fa-globe",
+                "className": "w3-button",
+                "text":null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": null,
+                "conditionShow": null
+              },
+              "actions": {
+                "sourceFillList": null,
+                "function": "oMapa.Actions.ZoomToFullExtent();"
+              }
+            },
+            "btnZoomToWorkExtent": {
+              "identity": {
+                "id": "btnZoomToWorkExtent",
+                "name": "Ir al area de trabajo",
+                "type": "button"
+              },
+              "help": {
+                "tip": "Ir al area de trabajo",
+                "urlTechHelp": null,
+                "legalHelp": null,
+                "legalText": null
+              },
+              "style": {
+                "className": "w3-button",
+                "icon": "fas fa-bullseye",
+                "text":null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": null,
+                "conditionShow": "(oMapa.Actions.ZoomToWorkExtent)"
+              },
+              "actions": {
+                "sourceFillList": null,
+                "function": "oMapa.Actions.ZoomToWorkExtent();"
+              }
+            },
+            "btnGoogleMapsLink": {
+                "identity": {
+                  "id": "btnGoogleMapsLink",
+                  "name": "Abrir ubicación en Google Maps",
+                  "type": "button"
+                },
+                "help": {
+                  "tip": "Abre la ubicación en Google Maps",
+                  "urlTechHelp": null,
+                  "legalHelp": null,
+                  "legalText": null
+                },
+                "style": {
+                  "className": "w3-button",
+                  "icon": "fas fa-map-marked",
+                  "text":null
+                },
+                "validation": {
+                  "authorization": null,
+                  "conditionEnable": null,
+                  "conditionShow": null
+                },
+                "actions": {
+                  "sourceFillList": null,
+                  "function": "oMapa.Actions.GoogleMapsLink();"
+                }
+            },
+            "btnPan": {
+              "identity": {
+                "id": "btnPan",
+                "name": "Desplazarse",
+                "type": "button"
+              },
+              "help": {
+                "tip": "Desplazarse",
+                "urlTechHelp": null,
+                "legalHelp": null,
+                "legalText": null
+              },
+              "style": {
+                "className": "w3-button",
+                "icon": "far fa-hand-paper",
+                "text": null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": null,
+                "conditionShow": null
+              },
+              "actions": {
+                "sourceFillList": null,
+                "function": "Pan();"
+              }
+            },
+            "btnExportMap": {
+              "identity": {
+                "id": "btnExportMap",
+                "name": "Exportar Mapa",
+                "type": "button"
+              },
+              "help": {
+                "tip": "Exporta el Mapa a una imagen",
+                "urlTechHelp": null,
+                "legalHelp": null,
+                "legalText": null
+              },
+              "style": {
+                "className": "w3-button",
+                "icon": "far fa-image",
+                "text":null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": null,
+                "conditionShow": null
+              },
+              "actions": {
+                "sourceFillList": null,
+                "function": "oMapa.Actions.ExportMap();"
+              }
+          },
+          "btnDownloadImage": {
+              "identity": {
+                "id": "btnDownloadImage",
+                "name": "Descargar Imagen",
+                "type": "a"
+              },
+              "help": {
+                "tip": "Descarga la imagen",
+                "urlTechHelp": null,
+                "legalHelp": null,
+                "legalText": null
+              },
+              "style": {
+                "className": null,
+                "icon": null,
+                "text":null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": null,
+                "conditionShow": null
+              },
+              "actions": {
+                "sourceFillList": null,
+                "function": null
+              }
+            },
+            "selEditLayers": {
+              "identity": {
+                "id": "selEditLayers",
+                "name": "Lista de Capas Editables",
+                "type": "select"
+              },
+              "help": {
+                "tip": "Seleccione la Capa a Editar",
+                "urlTechHelp": null,
+                "legalHelp": null,
+                "legalText": null
+              },
+              "style": {
+                "className": "w3-select",
+                "icon": null,
+                "text": null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": null,
+                "conditionShow": "oMapa.Actions.getEditableLayers().length > 1"
+              },
+              "actions": {
+                "sourceFillList": "",
+                "function": "Mapa.Actions.setEditableLayer(this.value);"
+              }
+            },
+            "btnNewPolygon": {
+              "identity": {
+                "id": "btnNewPolygon",
+                "name": "Crear nuevo elemento",
+                "type": "button"
+              },
+              "help": {
+                "tip": "Crea un nuevo poligono para la capa seleccionada",
+                "urlTechHelp": null,
+                "legalHelp": null,
+                "legalText": null
+              },
+              "style": {
+                "className": "w3-button",
+                "icon": "fas fa-ruler-combined",
+                "text": null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": "",
+                "conditionShow": "oMapa.Status.WorkLayer.geometry.type === 'Polygon' || oMapa.Status.WorkLayer.geometry.type === '*'"
+              },
+              "actions": {
+                "sourceFillList": "",
+                "function": "oMapa.Actions.draw('Polygon');"
+              }
+            },
+            "btnNewLine": {
+              "identity": {
+                "id": "btnNewLine",
+                "name": "Crear nuevo elemento",
+                "type": "button"
+              },
+              "help": {
+                "tip": "Crea una nueva linea para la capa seleccionada",
+                "urlTechHelp": null,
+                "legalHelp": null,
+                "legalText": null
+              },
+              "style": {
+                "className": "w3-button",
+                "icon": "fas fa-ruler",
+                "text": null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": null,
+                "conditionShow": "oMapa.Status.WorkLayer.geometry.type === 'LineString' || oMapa.Status.WorkLayer.geometry.type === '*'"
+              },
+              "actions": {
+                "sourceFillList": "",
+                "function": "oMapa.Actions.draw('LineString');"
+              }
+            },
+            "btnNewCircle": {
+              "identity": {
+                "id": "btnNewCircle",
+                "name": "Crear nuevo elemento",
+                "type": "button"
+              },
+              "help": {
+                "tip": "Crea un nuevo circulo para la capa seleccionada",
+                "urlTechHelp": null,
+                "legalHelp": null,
+                "legalText": null
+              },
+              "style": {
+                "className": "w3-button",
+                "icon": "far fa-circle",
+                "text": null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": null,
+                "conditionShow": "oMapa.Status.WorkLayer.geometry.type === 'Circle' || oMapa.Status.WorkLayer.geometry.type === '*'"
+              },
+              "actions": {
+                "sourceFillList": "",
+                "function": "oMapa.Actions.draw('Circle');"
+              }
+            },
+            "btnClearTemp": {
+              "identity": {
+                "id": "btnClearTemp",
+                "name": "Limpiar",
+                "type": "button"
+              },
+              "help": {
+                "tip": "Borra los trazos auxiliares y temporales",
+                "urlTechHelp": null,
+                "legalHelp": null,
+                "legalText": null
+              },
+              "style": {
+                "className": "w3-button",
+                "icon": "fas fa-eraser",
+                "text": null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": null,
+                "conditionShow": null
+              },
+              "actions": {
+                "sourceFillList": "",
+                "function": "oMapa.Actions.ClearTemp();"
+              }
+            },
+            "btnSelect": {
+              "identity": {
+                "id": "btnSelect",
+                "name": "Seleccionar elemento",
+                "type": "button"
+              },
+              "help": {
+                "tip": "Selecciona un elemento y permite su edicion",
+                "urlTechHelp": null,
+                "legalHelp": null,
+                "legalText": null
+              },
+              "style": {
+                "className": "w3-button",
+                "icon": "fas fa-location-arrow",
+                "text": null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": null,
+                "conditionShow": null
+              },
+              "actions": {
+                "sourceFillList": "",
+                "function": "oMapa.Actions.seleccionar();"
+              }
+            },
+            "btnFussion": {
+              "identity": {
+                "id": "btnFussion",
+                "name": "Fusionar",
+                "type": "button"
+              },
+              "help": {
+                "tip": "Fusiona los elementos seleccionados",
+                "urlTechHelp": null,
+                "legalHelp": null,
+                "legalText": null
+              },
+              "style": {
+                "className": "w3-button",
+                "icon": "fas fa-object-group",
+                "text": null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": "oMapa.Status.Select && oMapa.Status.Select.features.getLength() > 1 && oMapa.Actions.canFusionSimple(oMapa.Status.Select.features.getArray())",
+                "conditionShow": null
+              },
+              "actions": {
+                "sourceFillList": "",
+                "function": "oMapa.Actions.fussion();"
+              }
+            },
+            "btnDividir": {
+              "identity": {
+                "id": "btnDividir",
+                "name": "Dividir",
+                "type": "button"
+              },
+              "help": {
+                "tip": "Crea una linea para dividir el elemento seleccionado",
+                "urlTechHelp": null,
+                "legalHelp": null,
+                "legalText": null
+              },
+              "style": {
+                "className": "w3-button",
+                "icon": "fas fa-divide",
+                "text": null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": "oMapa.Status.Select && oMapa.Status.Select.features.getLength() === 1 && oMapa.Status.Select.isPolygon",
+                "conditionShow": null
+              },
+              "actions": {
+                "sourceFillList": "",
+                "function": "oMapa.Actions.dividir();"
+              }
+            },
+            "btnShpImport": {
+              "identity": {
+                "id": "btnShpImport",
+                "name": "Cargar Shapefile",
+                "type": "button"
+              },
+              "help": {
+                "tip": "Cargar geometrias desde un archivo shapefile comprimido (zip)",
+                "urlTechHelp": null,
+                "legalHelp": null,
+                "legalText": null
+              },
+              "style": {
+                "className": "w3-button",
+                "icon": "fas fa-upload",
+                "text": null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": "(oMapa.Status.WorkLayer.import && oMapa.Status.WorkLayer.import === true)",
+                "conditionShow": "(oMapa.Params.id_tramite !== undefined)"
+              },
+              "actions": {
+                "sourceFillList": "",
+                "function": "oMapa.Actions.ShowShpImport();"
+              }
+            },
+            "btnShpExport": {
+              "identity": {
+                "id": "btnShpExport",
+                "name": "Cargar Shapefile",
+                "type": "button"
+              },
+              "help": {
+                "tip": "Exportar a un archivo shapefile comprimido (zip)",
+                "urlTechHelp": null,
+                "legalHelp": null,
+                "legalText": null
+              },
+              "style": {
+                "className": "w3-button",
+                "icon": "fas fa-download",
+                "text": null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": "(oMapa.Status.WorkLayer.export && oMapa.Status.WorkLayer.export === true)",
+                "conditionShow": "(oMapa.Params.id_tramite !== undefined)"
+              },
+              "actions": {
+                "sourceFillList": "",
+                "function": "oMapa.Actions.exportShp();"
+              }
+            },
+            "btnSave": {
+              "identity": {
+                "id": "btnSave",
+                "name": "Guardar",
+                "type": "button"
+              },
+              "help": {
+                "tip": "Guardar los Cambios",
+                "urlTechHelp": null,
+                "legalHelp": null,
+                "legalText": null
+              },
+              "style": {
+                "className": "w3-button",
+                "icon": "fas fa-save",
+                "text": null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": null,
+                "conditionShow": null
+              },
+              "actions": {
+                "sourceFillList": "",
+                "function": "oMapa.Actions.Save();"
+              }
+            }
+          }
+    },
+    "ToolBar":null
+}

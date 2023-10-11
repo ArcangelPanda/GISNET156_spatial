@@ -1,0 +1,205 @@
+{
+    "Class" : "",
+    "Config":{
+        "Display":"Prefered Icons"
+    },
+    "MapView":{
+        "backgroundColor":"#000",
+        "Class" : "map no-space"
+    },
+    "MenuBar":null,
+    "ButtonBar":{
+        "Controls": {
+            "btnShowHideTOC": {
+                "identity": {
+                  "id": "btnShowHideTOC",
+                  "name": "TOC",
+                  "type": "button"
+                },
+                "help": {
+                  "tip": "Mostrar / Ocultar la Tabla de Contenido (TOC)",
+                  "urlTechHelp": null,
+                  "legalHelp": "www.google.com",
+                  "legalText": null
+                },
+                "style": {
+                  "icon": "fas fa-layer-group",
+                  "className": "w3-button",
+                  "text":null
+                },
+                "validation": {
+                  "authorization": null,
+                  "conditionEnable": null,
+                  "conditionShow": null
+                },
+                "actions": {
+                  "sourceFillList": null,
+                  "function": "oMapa.Actions.ShowHideTOC();"
+                }
+            },
+            "btnZoomToFullExtent": {
+              "identity": {
+                "id": "btnZoomToFullExtent",
+                "name": null,
+                "type": "button"
+              },
+              "help": {
+                "tip": "Ver toda el municipio",
+                "urlTechHelp": null,
+                "legalHelp": "www.google.com",
+                "legalText": null
+              },
+              "style": {
+                "icon": "fas fa-globe",
+                "className": "w3-button",
+                "text":null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": null,
+                "conditionShow": null
+              },
+              "actions": {
+                "sourceFillList": null,
+                "function": "oMapa.Actions.ZoomToFullExtent();"
+              }
+            },
+            "btnZoomToWorkExtent": {
+              "identity": {
+                "id": "btnZoomToWorkExtent",
+                "name": "Ir al area de trabajo",
+                "type": "button"
+              },
+              "help": {
+                "tip": "Ir al area de trabajo",
+                "urlTechHelp": null,
+                "legalHelp": null,
+                "legalText": null
+              },
+              "style": {
+                "className": "w3-button",
+                "icon": "fas fa-bullseye",
+                "text":null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": null,
+                "conditionShow": "(oMapa.Actions.ZoomToWorkExtent)"
+              },
+              "actions": {
+                "sourceFillList": null,
+                "function": "oMapa.Actions.ZoomToWorkExtent();"
+              }
+            },
+            "btnExportMap": {
+                "identity": {
+                  "id": "btnExportMap",
+                  "name": "Exportar Mapa",
+                  "type": "button"
+                },
+                "help": {
+                  "tip": "Exporta el Mapa a una imagen",
+                  "urlTechHelp": null,
+                  "legalHelp": null,
+                  "legalText": null
+                },
+                "style": {
+                  "className": "w3-button",
+                  "icon": "far fa-image",
+                  "text":null
+                },
+                "validation": {
+                  "authorization": null,
+                  "conditionEnable": null,
+                  "conditionShow": null
+                },
+                "actions": {
+                  "sourceFillList": null,
+                  "function": "oMapa.Actions.ExportMap(true);"
+                }
+            },
+            "btnDownloadImage": {
+                "identity": {
+                  "id": "btnDownloadImage",
+                  "name": "Descargar Imagen",
+                  "type": "a"
+                },
+                "help": {
+                  "tip": "Descarga la imagen",
+                  "urlTechHelp": null,
+                  "legalHelp": null,
+                  "legalText": null
+                },
+                "style": {
+                  "className": "hidden",
+                  "icon": null,
+                  "text":null
+                },
+                "validation": {
+                  "authorization": null,
+                  "conditionEnable": null,
+                  "conditionShow": null
+                },
+                "actions": {
+                  "sourceFillList": null,
+                  "function": null
+                }
+            },
+            "btnGoogleMapsLink": {
+                "identity": {
+                  "id": "btnGoogleMapsLink",
+                  "name": "Abrir ubicación en Google Maps",
+                  "type": "button"
+                },
+                "help": {
+                  "tip": "Abre la ubicación en Google Maps",
+                  "urlTechHelp": null,
+                  "legalHelp": null,
+                  "legalText": null
+                },
+                "style": {
+                  "className": "w3-button",
+                  "icon": "fas fa-map-marked",
+                  "text":null
+                },
+                "validation": {
+                  "authorization": null,
+                  "conditionEnable": null,
+                  "conditionShow": null
+                },
+                "actions": {
+                  "sourceFillList": null,
+                  "function": "oMapa.Actions.GoogleMapsLink();"
+                }
+            },
+            "btnIdentify": {
+              "identity": {
+                "id": "btnIdentify",
+                "name": "Identificar",
+                "type": "button"
+              },
+              "help": {
+                "tip": "Identifica los elementos del mapa",
+                "urlTechHelp": null,
+                "legalHelp": null,
+                "legalText": null
+              },
+              "style": {
+                "className": "w3-button",
+                "icon": "fas fa-info",
+                "text":null
+              },
+              "validation": {
+                "authorization": null,
+                "conditionEnable": null,
+                "conditionShow": null
+              },
+              "actions": {
+                "sourceFillList": null,
+                "function": "oMapa.Actions.Identify();"
+              }
+          }
+        }
+    },
+    "ToolBar":null
+}

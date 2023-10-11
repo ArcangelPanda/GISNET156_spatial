@@ -1,0 +1,13 @@
+{
+  "BackgroundColor": "#000000",
+  "SpatialReference": {
+    "SRID": "EPSG:3857",
+    "Units": null
+  },
+  "DefaultView": {
+    "X": -12353045,
+    "Y": 3388443,
+    "DefaultZoom": 10
+  },
+  "Parameters" : []
+}
