@@ -1,421 +1,424 @@
 {
-	"BaseMapGroup": {
-		"id": "BaseMapGroup",
-		"name": "Mapa Base",
-		"status": {
-			"visible": false,
-			"opacity": 1,
-			"expanded": false
-		},
-		"layers": {
-			"OSM": {
-				"id": "OSM",
-				"name": "Open Street Map",
-				"source": {
-					"type": "OSM",
-					"SRID": "EPSG:3857",
-					"subType": "Tile",
-					"legend": null
-				},
-				"status": {
-					"opacity": 1,
-					"visible": false
-				},
-				"actions": {
-					"identify": null,
-					"extent": null,
-					"create": null,
-					"update": null,
-					"delete": null,
-					"search": null
-				}
-			},
-			"WorldImagery": {
-				"id": "WorldImagery",
-				"name": "Imagen satelital",
-				"source": {
-					"type": "XYZ",
-					"SRID": "EPSG:3857",
-					"subType": "Tile",
-					"legend": null,
-					"url": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-				},
-				"status": {
-					"opacity": 1,
-					"visible": false
-				},
-				"actions": {
-					"identify": null,
-					"extent": null,
-					"create": null,
-					"update": null,
-					"delete": null,
-					"search": null
-				}
-			},
-			"GoogleHybrid": {
-				"id": "GoogleHybridy",
-				"name": "Google Hybrid",
-				"source": {
-				"type":"XYZ",
-				"SRID": "EPSG:3857",
-				"subType": "Tile",
-				"legend": null,
-				"url": "http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}"
-				},
-				"status":{
-				"opacity": 1,
-				"visible": true
-				},
-				"actions" : {
-				"identify": null,
-				"extent" : null,
-				"create" : null,
-				"update" : null,
-				"delete" : null,
-				"search" : null
-				}
-      		},
-		"WMSOrtofoto2017": {
-  "id": "WMSOrtofoto2017",
-  "name": "Ortofoto 2017",
-  "source": {
-          "type":"WMS",
+  "BaseMapGroup": {
+    "id": "BaseMapGroup",
+    "name": "Mapa Base",
+    "status": {
+      "visible": false,
+      "opacity": 1,
+      "expanded": false
+    },
+    "layers": {
+      "OSM": {
+        "id": "OSM",
+        "name": "Open Street Map",
+        "source": {
+          "type": "OSM",
+          "SRID": "EPSG:3857",
+          "subType": "Tile",
+          "legend": null
+        },
+        "status": {
+          "opacity": 1,
+          "visible": false
+        },
+        "actions": {
+          "identify": null,
+          "extent": null,
+          "create": null,
+          "update": null,
+          "delete": null,
+          "search": null
+        }
+      },
+      "WorldImagery": {
+        "id": "WorldImagery",
+        "name": "Imagen satelital",
+        "source": {
+          "type": "XYZ",
+          "SRID": "EPSG:3857",
+          "subType": "Tile",
+          "legend": null,
+          "url": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+        },
+        "status": {
+          "opacity": 1,
+          "visible": false
+        },
+        "actions": {
+          "identify": null,
+          "extent": null,
+          "create": null,
+          "update": null,
+          "delete": null,
+          "search": null
+        }
+      },
+      "GoogleHybrid": {
+        "id": "GoogleHybridy",
+        "name": "Google Hybrid",
+        "source": {
+          "type": "XYZ",
+          "SRID": "EPSG:3857",
+          "subType": "Tile",
+          "legend": null,
+          "url": "http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}"
+        },
+        "status": {
+          "opacity": 1,
+          "visible": true
+        },
+        "actions": {
+          "identify": null,
+          "extent": null,
+          "create": null,
+          "update": null,
+          "delete": null,
+          "search": null
+        }
+      },
+      "WMSOrtofoto2017": {
+        "id": "WMSOrtofoto2017",
+        "name": "Ortofoto 2017",
+        "source": {
+          "type": "WMS",
           "SRID": "EPSG:32612",
           "subType": "Tile",
           "format": "image/png",
           "WMShost": "http://192.168.200.156:8083/geoserver/spatial/wms",
           "workspace": "spatial",
           "layer": "Ortofoto2017"
-  },
-  "status":{
+        },
+        "status": {
           "opacity": 1,
           "visible": true
-  },
-  "actions" : {
+        },
+        "actions": {
           "identify": null,
-          "extent" : null,
-          "create" : null,
-          "update" : null,
-          "delete" : null,
-          "search" : null
-  }
-},
-			"WMSOrtofoto2022": {
-				"id": "WMSOrtofoto2022",
-				"name": "Ortofoto 2022",
-				"source": {
-					"type":"WMS",
-					"SRID": "EPSG:32614",
-					"subType": "Tile",
-					"format": "image/png",
-					"WMShost": "http://192.168.200.156:8083/geoserver/spatial/wms",
-					"workspace": "spatial",
-					"layer": "Ortofoto2022"
-				},
-				"status":{
-					"opacity": 1,
-					"visible": true
-				},
-				"actions" : {
-					"identify": null,
-					"extent" : null,
-					"create" : null,
-					"update" : null,
-					"delete" : null,
-					"search" : null
-				}
-		  	}
-		}
-	},
-	"GeomGroup": {
-		"id": "GeomGroup",
-		"name": "Geometrías",
-		"status": {
-			"visible": true,
-			"opacity": 1,
-			"expanded": true
-		},
-		"layers": {
-			"WMSZonasValor": {
-				"id": "WMSZonasValor",
-				"name": "Zonas de Valor",
-				"source": {
-					"type": "WMS",
-					"SRID": "EPSG:32612",
-					"subType": "Tile",
-					"format": "image/png",
-					"WMShost": "http://192.168.200.156:8083/geoserver/spatial/wms",
-					"workspace": "spatial",
-					"layer": "vZonaValor"
-				},
-				"status": {
-					"opacity": 1,
-					"visible": false
-				},
-				"actions": {
-					"identify": null,
-					"extent": null,
-					"create": null,
-					"update": null,
-					"delete": null,
-					"search": null
-				}
-			},
-			"WMSBandasValor": {
-				"id": "WMSBandasValor",
-				"name": "Bandas de Valor",
-				"source": {
-					"type": "WMS",
-					"SRID": "EPSG:32612",
-					"subType": "Tile",
-					"format": "image/png",
-					"WMShost": "http://192.168.200.156:8083/geoserver/spatial/wms",
-					"workspace": "spatial",
-					"layer": "vBandaValor"
-				},
-				"status": {
-					"opacity": 1,
-					"visible": false
-				},
-				"actions": {
-					"identify": null,
-					"extent": null,
-					"create": null,
-					"update": null,
-					"delete": null,
-					"search": null
-				}
-			},
-			"WMSColonias": {
-				"id": "WMSColonias",
-				"name": "Colonias",
-				"source": {
-					"type": "WMS",
-					"SRID": "EPSG:32612",
-					"subType": "Tile",
-					"format": "image/png",
-					"WMShost": "http://192.168.200.156:8083/geoserver/spatial/wms",
-					"workspace": "spatial",
-					"layer": "vColonias"
-				},
-				"status": {
-					"opacity": 1,
-					"visible": false
-				},
-				"actions": {
-					"identify": null,
-					"extent": null,
-					"create": null,
-					"update": null,
-					"delete": null,
-					"search": null
-				}
-			},
-			"WMSManzanas": {
-				"id": "WMSManzanas",
-				"name": "Manzanas",
-				"source": {
-					"type": "WMS",
-					"SRID": "EPSG:32612",
-					"subType": "Tile",
-					"format": "image/png",
-					"WMShost": "http://192.168.200.156:8083/geoserver/spatial/wms",
-					"workspace": "spatial",
-					"layer": "vManzanas"
-				},
-				"status": {
-					"opacity": 1,
-					"visible": false
-				},
-				"actions": {
-					"identify": null,
-					"extent": null,
-					"create": null,
-					"update": null,
-					"delete": null,
-					"search": null
-				}
-			},
-			"WMSPredios": {
-				"id": "WMSPredios",
-				"name": "Predios",
-				"source": {
-					"type": "WMS",
-					"SRID": "EPSG:32612",
-					"subType": "Tile",
-					"format": "image/png",
-					"WMShost": "http://192.168.200.156:8083/geoserver/spatial/wms",
-					"workspace": "spatial",
-					"layer": "predios1"
-				},
-				"status": {
-					"opacity": 1,
-					"visible": true
-				},
-				"actions": {
-					"identify": null,
-					"extent": null,
-					"create": null,
-					"update": null,
-					"delete": null,
-					"search": null
-				}
-			},
-			"WMSConstrucciones": {
-				"id": "WMSConstrucciones",
-				"name": "Construcciones",
-				"source": {
-					"type": "WMS",
-					"SRID": "EPSG:32612",
-					"subType": "Tile",
-					"format": "image/png",
-					"WMShost": "http://192.168.200.156:8083/geoserver/spatial/wms",
-					"workspace": "spatial",
-					"layer": "vConstrucciones"
-				},
-				"status": {
-					"opacity": 1,
-					"visible": true
-				},
-				"actions": {
-					"identify": null,
-					"extent": null,
-					"create": null,
-					"update": null,
-					"delete": null,
-					"search": null
-				}
-			},
-			"WMSVialidades": {
-				"id": "WMSVialidades",
-				"name": "Vialidades",
-				"source": {
-					"type": "WMS",
-					"SRID": "EPSG:32612",
-					"subType": "Tile",
-					"format": "image/png",
-					"WMShost": "http://192.168.200.156:8083/geoserver/spatial/wms",
-					"workspace": "spatial",
-					"layer": "vialidades"
-				},
-				"status": {
-					"opacity": 1,
-					"visible": true
-				},
-				"actions": {
-					"identify": null,
-					"extent": null,
-					"create": null,
-					"update": null,
-					"delete": null,
-					"search": null
-				}
-			}
-		}
-	},
+          "extent": null,
+          "create": null,
+          "update": null,
+          "delete": null,
+          "search": null
+        }
+      },
+      "WMSOrtofoto2022": {
+        "id": "WMSOrtofoto2022",
+        "name": "Ortofoto 2022",
+        "source": {
+          "type": "WMS",
+          "SRID": "EPSG:32614",
+          "subType": "Tile",
+          "format": "image/png",
+          "WMShost": "http://192.168.200.156:8083/geoserver/spatial/wms",
+          "workspace": "spatial",
+          "layer": "Ortofoto2022"
+        },
+        "status": {
+          "opacity": 1,
+          "visible": true
+        },
+        "actions": {
+          "identify": null,
+          "extent": null,
+          "create": null,
+          "update": null,
+          "delete": null,
+          "search": null
+        }
+      }
+    }
+  },
+  "GeomGroup": {
+    "id": "GeomGroup",
+    "name": "Geometrías",
+    "status": {
+      "visible": true,
+      "opacity": 1,
+      "expanded": true
+    },
+    "layers": {
+      "WMSZonasValor": {
+        "id": "WMSZonasValor",
+        "name": "Zonas de Valor",
+        "source": {
+          "type": "WMS",
+          "SRID": "EPSG:32612",
+          "subType": "Tile",
+          "format": "image/png",
+          "WMShost": "http://192.168.200.156:8083/geoserver/spatial/wms",
+          "workspace": "spatial",
+          "layer": "vZonaValor"
+        },
+        "status": {
+          "opacity": 1,
+          "visible": false
+        },
+        "actions": {
+          "identify": null,
+          "extent": null,
+          "create": null,
+          "update": null,
+          "delete": null,
+          "search": null
+        }
+      },
+      "WMSBandasValor": {
+        "id": "WMSBandasValor",
+        "name": "Bandas de Valor",
+        "source": {
+          "type": "WMS",
+          "SRID": "EPSG:32612",
+          "subType": "Tile",
+          "format": "image/png",
+          "WMShost": "http://192.168.200.156:8083/geoserver/spatial/wms",
+          "workspace": "spatial",
+          "layer": "vBandaValor"
+        },
+        "status": {
+          "opacity": 1,
+          "visible": false
+        },
+        "actions": {
+          "identify": null,
+          "extent": null,
+          "create": null,
+          "update": null,
+          "delete": null,
+          "search": null
+        }
+      },
+      "WMSColonias": {
+        "id": "WMSColonias",
+        "name": "Colonias",
+        "source": {
+          "type": "WMS",
+          "SRID": "EPSG:32612",
+          "subType": "Tile",
+          "format": "image/png",
+          "WMShost": "http://192.168.200.156:8083/geoserver/spatial/wms",
+          "workspace": "spatial",
+          "layer": "vColonias"
+        },
+        "status": {
+          "opacity": 1,
+          "visible": false
+        },
+        "actions": {
+          "identify": null,
+          "extent": null,
+          "create": null,
+          "update": null,
+          "delete": null,
+          "search": null
+        }
+      },
+      "WMSManzanas": {
+        "id": "WMSManzanas",
+        "name": "Manzanas",
+        "source": {
+          "type": "WMS",
+          "SRID": "EPSG:32612",
+          "subType": "Tile",
+          "format": "image/png",
+          "WMShost": "http://192.168.200.156:8083/geoserver/spatial/wms",
+          "workspace": "spatial",
+          "layer": "vManzanas"
+        },
+        "status": {
+          "opacity": 1,
+          "visible": false
+        },
+        "actions": {
+          "identify": null,
+          "extent": null,
+          "create": null,
+          "update": null,
+          "delete": null,
+          "search": null
+        }
+      },
+      "WMSPredios": {
+        "id": "WMSPredios",
+        "name": "Predios",
+        "source": {
+          "type": "WMS",
+          "SRID": "EPSG:32612",
+          "subType": "Tile",
+          "format": "image/png",
+          "WMShost": "http://192.168.200.156:8083/geoserver/spatial/wms",
+          "workspace": "spatial",
+          "layer": "predios1"
+        },
+        "status": {
+          "opacity": 1,
+          "visible": true
+        },
+        "actions": {
+          "identify": null,
+          "extent": null,
+          "create": null,
+          "update": null,
+          "delete": null,
+          "search": null
+        }
+      },
+      "WMSConstrucciones": {
+        "id": "WMSConstrucciones",
+        "name": "Construcciones",
+        "source": {
+          "type": "WMS",
+          "SRID": "EPSG:32612",
+          "subType": "Tile",
+          "format": "image/png",
+          "WMShost": "http://192.168.200.156:8083/geoserver/spatial/wms",
+          "workspace": "spatial",
+          "layer": "vConstrucciones"
+        },
+        "status": {
+          "opacity": 1,
+          "visible": true
+        },
+        "actions": {
+          "identify": null,
+          "extent": null,
+          "create": null,
+          "update": null,
+          "delete": null,
+          "search": null
+        }
+      },
+      "WMSVialidades": {
+        "id": "WMSVialidades",
+        "name": "Vialidades",
+        "source": {
+          "type": "WMS",
+          "SRID": "EPSG:32612",
+          "subType": "Tile",
+          "format": "image/png",
+          "WMShost": "http://192.168.200.156:8083/geoserver/spatial/wms",
+          "workspace": "spatial",
+          "layer": "vialidades"
+        },
+        "status": {
+          "opacity": 1,
+          "visible": true
+        },
+        "actions": {
+          "identify": null,
+          "extent": null,
+          "create": null,
+          "update": null,
+          "delete": null,
+          "search": null
+        }
+      }
+    }
+  },
   "WorkGroup": {
     "id": "WorkGroup",
     "name": "Grupo de Trabajo",
-    "status" : {
+    "status": {
       "visible": true,
-      "opacity":1,
+      "opacity": 1,
       "expanded": true
     },
-    "layers":{
+    "layers": {
       "VectorPredios": {
         "id": "VectorPredios",
         "name": "Predios Aledaños",
         "source": {
-          "type":"MVC",
+          "type": "MVC",
           "SRID": "EPSG:32612",
           "subType": "WKT",
           "visible": false
         },
-        "status":{
+        "status": {
           "opacity": 1,
           "visible": false
         },
-        "actions" : {
-          "get" : {
-            "url": "http://192.168.200.156:3000/Predio/predios_x_manzana/id",
-            "params" : ["id"],
+        "actions": {
+          "get": {
+            "url": "http://192.168.200.156:3000/Predio/predios_x_manzana/jid/id",
+            "params": [ "jid", "id" ],
+            "jid": "jid",
             "id": "id"
           },
           "identify": null,
-          "extent" : {
+          "extent": {
             "RadioBuffer": 5
           },
-          "create" : null,
-          "update" : null,
-          "delete" : null,
-          "search" : null
+          "create": null,
+          "update": null,
+          "delete": null,
+          "search": null
         }
       },
-  "VectorPredio": {
+      "VectorPredio": {
         "id": "VectorPredio",
         "name": "Predio",
-        "editable" : false,
-        "snap" : true,
+        "editable": false,
+        "snap": true,
         "source": {
-          "type":"MVC",
+          "type": "MVC",
           "SRID": "EPSG:32612",
           "subType": "WKT",
-          "geometry" : {
-            "type" : "Polygon",
-            "order" : "north",
+          "geometry": {
+            "type": "Polygon",
+            "order": "north",
             "clockwise": true,
             "detaillsLayers": {
               "dimension": "CotasPredio",
-              "vertex" :"VerticesPredio",
-              "area" :"AreasPredio"
+              "vertex": "VerticesPredio",
+              "area": "AreasPredio"
             }
           }
         },
-        "status":{
+        "status": {
           "opacity": 1,
           "visible": true
         },
-        "actions" : {
-          "get" : {
-            "url": "http://192.168.200.156:3000/Predio/predio_x_clave/id",
-            "params" : ["id"],
+        "actions": {
+          "get": {
+            "url": "http://192.168.200.156:3000/Predio/predio_x_clave/jid/id",
+            "params": [ "jid", "id" ],
+            "jid": "jid",
             "id": "id"
           },
           "identify": null,
-          "extent" : {
+          "extent": {
             "RadioBuffer": 5
           }
         }
       },
-  "VectorConstruccion": {
+      "VectorConstruccion": {
         "id": "VectorConstruccion",
         "name": "Construcciones",
-        "editable" : false,
-        "snap" : true,
+        "editable": false,
+        "snap": true,
         "source": {
-          "type":"MVC",
+          "type": "MVC",
           "SRID": "EPSG:32612",
           "subType": "WKT",
-          "geometry" : {
-            "type" : "Polygon",
-            "order" : "north",
+          "geometry": {
+            "type": "Polygon",
+            "order": "north",
             "clockwise": true,
             "detaillsLayers": null
           }
         },
-        "status":{
+        "status": {
           "opacity": 1,
           "visible": true
         },
-        "actions" : {
-          "get" : {
-            "url": "http://192.168.200.156:3000/Construccion/construcciones_x_predio/id",
-            "params" : ["id"],
+        "actions": {
+          "get": {
+            "url": "http://192.168.200.156:3000/Construccion/construcciones_x_predio/jid/id",
+            "params": [ "jid", "id" ],
+            "jid": "jid",
             "id": "id"
           },
           "identify": null,
-          "extent" : null
+          "extent": null
         }
       }
     }
@@ -423,124 +426,124 @@
   "TempGroup": {
     "id": "TempGroup",
     "name": "Temporal",
-    "status" : {
+    "status": {
       "visible": true,
-      "opacity":1,
+      "opacity": 1,
       "expanded": true
     },
-    "layers":{
+    "layers": {
       "CotasPredio": {
         "id": "CotasPredio",
         "name": "Cotas del Predio",
         "source": {
-          "type":"Vector",
+          "type": "Vector",
           "SRID": null,
           "subType": null,
           "visible": false
         },
-        "status":{
+        "status": {
           "opacity": 1,
           "visible": true
         },
-        "actions" : {
-          "get" : null,
+        "actions": {
+          "get": null,
           "identify": null,
-          "extent" : null,
-          "create" : null,
-          "update" : null,
-          "delete" : null,
-          "search" : null
+          "extent": null,
+          "create": null,
+          "update": null,
+          "delete": null,
+          "search": null
         }
       },
       "VerticesPredio": {
         "id": "VerticesPredio",
         "name": "Vertices del Predio",
         "source": {
-          "type":"Vector",
+          "type": "Vector",
           "SRID": null,
           "subType": null
         },
-        "status":{
+        "status": {
           "opacity": 1,
           "visible": false
         },
-        "actions" : {
-          "get" : null,
+        "actions": {
+          "get": null,
           "identify": null,
-          "extent" : null,
-          "create" : null,
-          "update" : null,
-          "delete" : null,
-          "search" : null
+          "extent": null,
+          "create": null,
+          "update": null,
+          "delete": null,
+          "search": null
         }
       },
       "AreasPredio": {
         "id": "AreasPredio",
         "name": "Areas del Predio",
         "source": {
-          "type":"Vector",
+          "type": "Vector",
           "SRID": null,
           "subType": null
         },
-        "status":{
+        "status": {
           "opacity": 1,
           "visible": false
         },
-        "actions" : {
-          "get" : null,
+        "actions": {
+          "get": null,
           "identify": null,
-          "extent" : null,
-          "create" : null,
-          "update" : null,
-          "delete" : null,
-          "search" : null
+          "extent": null,
+          "create": null,
+          "update": null,
+          "delete": null,
+          "search": null
         }
       },
       "Auxiliar": {
         "id": "Auxiliar",
         "name": "Auxiliar de Dibujos",
         "source": {
-          "type":"Vector",
+          "type": "Vector",
           "SRID": null,
           "subType": null,
           "visible": false
         },
-        "status":{
+        "status": {
           "opacity": 1,
           "visible": true
         },
-        "actions" : {
-          "get" : null,
+        "actions": {
+          "get": null,
           "identify": null,
-          "extent" : null,
-          "create" : null,
-          "update" : null,
-          "delete" : null,
-          "search" : null
+          "extent": null,
+          "create": null,
+          "update": null,
+          "delete": null,
+          "search": null
         }
       },
       "Temp": {
         "id": "Temp",
         "name": "Temporal",
         "source": {
-          "type":"Vector",
+          "type": "Vector",
           "SRID": null,
           "subType": null,
           "visible": false
         },
-        "status":{
+        "status": {
           "opacity": 1,
           "visible": true,
-		  "inTOC" : false
+          "inTOC": false
         },
-        "actions" : {
-          "get" : null,
+        "actions": {
+          "get": null,
           "identify": null,
-          "extent" : null,
-          "create" : null,
-          "update" : null,
-          "delete" : null,
-          "search" : null
+          "extent": null,
+          "create": null,
+          "update": null,
+          "delete": null,
+          "search": null
         }
       }
     }

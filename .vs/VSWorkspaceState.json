@@ -1,7 +1,14 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\js",
+    "\\json",
+    "\\json\\Consulta",
+    "\\json\\Create",
+    "\\json\\Divide",
+    "\\json\\Edit",
+    "\\json\\Fusion",
+    "\\json\\PredioCroquis"
   ],
-  "SelectedNode": "\\C:\\Users\\Administrator\\Source\\Repos\\GISNET156_spatial",
   "PreviewInSolutionExplorer": false
 }

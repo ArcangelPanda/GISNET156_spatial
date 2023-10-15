@@ -1,11 +1,11 @@
 "use strict";
 
-function initMap(container){
+function initMap(container) {
     let params = {};
 
     params.container = !container || container === undefined ? container : null;
 
-    for (var p of new URLSearchParams(document.location.search).entries()){
+    for (var p of new URLSearchParams(document.location.search).entries()) {
         params[p[0]] = p[1];
     }
 
@@ -15,7 +15,7 @@ function initMap(container){
 var oMapa = initMap('Mapa');
 
 oMapa.Actions.ZoomToWorkExtent ? oMapa.Actions.ZoomToWorkExtent() : oMapa.Actions.ZoomToFullExtent();
-if(oMapa.Status.editable) {
+if (oMapa.Status.editable) {
     oMapa.Actions.setEditableLayer(oMapa.Status.editable);
 }
 oMapa.Actions.UpdateUI();

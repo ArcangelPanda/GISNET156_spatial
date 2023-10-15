@@ -102,18 +102,111 @@ var fnAddFeatureControl = function (feature) {
     }
 };
 
+var stylePredios = function (id) {
+    return new ol.style.Style({
+        fill: new ol.style.Fill({
+            color: 'rgba(255,0,0,0.001)'
+        }),
+        stroke: new ol.style.Stroke({
+            color: '#99ff99',
+            width: 2
+        }),
+        stroke: new ol.style.Stroke({
+            color: '#009900',
+            width: 1
+        }),
+        image: new ol.style.Circle({
+            radius: 7,
+            fill: new ol.style.Fill({
+                color: '#6666cc'
+            })
+        }),
+        text: new ol.style.Text({
+            offsetY: 10,
+            font: "bold 16px Calibri",
+            text: (id ? id : '').toString(),
+            fill: new ol.style.Fill({
+                color: '#6666cc'
+            }),
+            placement: 'point',
+            overflow: false,
+            stroke: new ol.style.Stroke({
+                color: '#ffffff',
+                width: 3
+            }),
+        })
+    });
+};
+
+var StylePredioSeleccionado = function (id) {
+    return [
+        new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: '#404142',
+                width: 5
+            }), zIndex: 5
+        }),
+        new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: 'rgba(255,255,255,0.1)'
+            }),
+            stroke: new ol.style.Stroke({
+                color: '#e6ff42',
+                width: 1
+            }),
+            text: new ol.style.Text({
+                font: "bold 16px Calibri",
+                text: (id ? id : '').toString(),
+                fill: new ol.style.Fill({
+                    color: '#ffffff'
+                }),
+                overflow: false,
+                stroke: new ol.style.Stroke({
+                    color: '#000000',
+                    width: 3
+                })
+            }), zIndex: 10
+        })];
+};
+
+var StyleConstrucciones = function (id) {
+    return new ol.style.Style({
+        fill: new ol.style.Fill({
+            color: 'rgba(255, 0, 247,0.01)'
+        }),
+        stroke: new ol.style.Stroke({
+            color: '#ff00f7',
+            width: 1
+        }),
+        text: new ol.style.Text({
+            font: "20px Calibri",
+            offsetY: -20,
+            text: (id ? id : '').toString(),
+            fill: new ol.style.Fill({
+                color: '#ffffff'
+            }),
+            overflow: false,
+            stroke: new ol.style.Stroke({
+                color: '#000000',
+                width: 4
+            })
+        })
+    });
+};
+
+
 class SpatialComponent {
-    constructor(params){
+    constructor(params) {
         const Mapa = this;
 
         Mapa.Params = params;
         Mapa.Params.type = params.type !== null && params.type !== undefined ? params.type : 'default';
 
-        Mapa.Map={};
-        Mapa.Projections={};
+        Mapa.Map = {};
+        Mapa.Projections = {};
         Mapa.Layers = {};
         Mapa.Actions = {};
-        Mapa.Work={};
+        Mapa.Work = {};
         Mapa.Status = {};
         Mapa.Status.MemorySketch = {}
         Mapa.UI = {};
@@ -121,19 +214,19 @@ class SpatialComponent {
         Mapa.UI.Controls = {};
         Mapa.Errors = [];
         Mapa.Interactions = {
-            evtKeys : {},
-            interactions : {},
-            snaps : []
+            evtKeys: {},
+            interactions: {},
+            snaps: []
         };
         Mapa.Math = {};
 
         Mapa.JSONConfig = httpGet("/json/" + Mapa.Params.type + "/map.json", "JSON");
         Mapa.UI.JSONConfig = httpGet("/json/" + Mapa.Params.type + "/UI.json", "JSON");
-        
+
         Mapa.Layers.JSONConfig = httpGet("/json/" + Mapa.Params.type + "/Layers.json", "JSON");
         Mapa.Projections.JSONConfig = httpGet("/json/projections.json", "JSON");
 
-        Mapa.JSONConfig.Parameters.forEach(function(p){
+        Mapa.JSONConfig.Parameters.forEach(function (p) {
             if (!params[p] || params[p] === undefined) {
                 Mapa.Errors.push("Falta el parametro requerido: " + p);
                 throw "Falta el parametro requerido: " + p
@@ -144,20 +237,20 @@ class SpatialComponent {
 
         return Mapa.initMap();
     }
-    
+
     initProjections() {
         let Mapa = this;
 
-        for(let i = 0; i<Mapa.Projections.JSONConfig.projections.length;i++){
+        for (let i = 0; i < Mapa.Projections.JSONConfig.projections.length; i++) {
             const p = Mapa.Projections.JSONConfig.projections[i];
             proj4.defs(Object.keys(p)[0], p[Object.keys(p)[0]]);
         }
-        
+
         ol.proj.proj4.register(proj4);
 
         Mapa.Projections.Default = ol.proj.get(Mapa.JSONConfig.SpatialReference.SRID);
 
-        Mapa.Projections.getCurrent = function() {
+        Mapa.Projections.getCurrent = function () {
             const currentView = Mapa.Map.getView();
             return currentView.getProjection();
         }
@@ -165,28 +258,28 @@ class SpatialComponent {
         return;
     };
 
-    initActions(){
+    initActions() {
         const Mapa = this;
 
-        document.getElementById('Radio').onchange = function(){
-            Mapa.Status.MemorySketch.geometry.setRadius(parseFloat(this.value)); 
-            Mapa.Status.MemorySketch.radio = parseFloat(this.value); 
+        document.getElementById('Radio').onchange = function () {
+            Mapa.Status.MemorySketch.geometry.setRadius(parseFloat(this.value));
+            Mapa.Status.MemorySketch.radio = parseFloat(this.value);
             if (Mapa.Interactions.interactions.draw) {
-                Mapa.Interactions.interactions.draw.finishDrawing(); 
-            }; 
-            this.value = 0; 
+                Mapa.Interactions.interactions.draw.finishDrawing();
+            };
+            this.value = 0;
             Mapa.Status.MemorySketch.radio = 0;
         }
 
-        Mapa.Actions.ClearTemp = function() {
+        Mapa.Actions.ClearTemp = function () {
 
             Mapa.Layers.Auxiliar.getSource().clear();
             Mapa.Layers.Temp.getSource().clear();
-            
+
             Mapa.Actions.ClearInteractions();
         }
 
-        Mapa.Actions.ShowShpImport = function() {
+        Mapa.Actions.ShowShpImport = function () {
             document.getElementById('CargaShapefileContainer').style.display = document.getElementById('CargaShapefileContainer').style.display === 'block' ? 'none' : 'block';
         }
 
@@ -196,13 +289,13 @@ class SpatialComponent {
             if (Mapa.file) {
                 reader.readAsDataURL(Mapa.file);
             }
-        
+
             reader.onloadend = function () {
                 //preview.src = reader.result;
             };
         };
 
-        Mapa.Actions.exportShp = function() {
+        Mapa.Actions.exportShp = function () {
             let draw = new ol.interaction.Draw({
                 source: Mapa.Layers.Temp.getSource(),
                 type: 'Polygon',
@@ -216,10 +309,10 @@ class SpatialComponent {
                 };
 
                 let url = ""
-                if(Mapa.Status.WorkLayer.id === 'VectorPredio') {
-                    url = APIurl +'/Predio/export';
-                } else if(Mapa.Status.WorkLayer.id === 'VectorConstruccion') {
-                    url = APIurl + '/Construccion/export';
+                if (Mapa.Status.WorkLayer.id === 'VectorPredio') {
+                    url = APIurl + '/Predio/export/' + Mapa.Params.jid;
+                } else if (Mapa.Status.WorkLayer.id === 'VectorConstruccion') {
+                    url = APIurl + '/Construccion/export/' + Mapa.Params.jid;
                 } else {
                     return;
                 }
@@ -229,7 +322,7 @@ class SpatialComponent {
                 xmlHttp.setRequestHeader("Content-type", "application/json");
                 xmlHttp.send(JSON.stringify(data));
 
-                if(xmlHttp.responseText !== "") {
+                if (xmlHttp.responseText !== "") {
                     window.open('/shp/' + xmlHttp.responseText);
                 }
 
@@ -246,11 +339,11 @@ class SpatialComponent {
         Mapa.Actions.ImportShp = function () {
             let epsg = Mapa.JSONConfig.SRID;
             let encoding = 'UTF-8';
-        
+
             if (!Mapa.file) {
                 return null;
             }
-        
+
             loadshp({
                 url: Mapa.file,
                 encoding: encoding,
@@ -258,48 +351,48 @@ class SpatialComponent {
             }, function (data) {
                 let URL = window.URL || window.webkitURL || window.mozURL || window.msURL,
                     url = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: "application/json" }));
-        
+
                 let format = new ol.format.GeoJSON();
                 let features = format.readFeatures(data);
-                let registros ={}
+                let registros = {}
 
-                if(Mapa.Status.WorkLayer.id === 'VectorPredio') {
-                    registros = httpGet(APIurl + '/predio/Predios_x_Tramite/' + Mapa.Params.id_tramite,'JSON')
+                if (Mapa.Status.WorkLayer.id === 'VectorPredio') {
+                    registros = httpGet(APIurl + '/predio/Predios_x_Tramite/' + Mapa.Params.id_tramite, 'JSON')
 
                     Mapa.Status.WorkLayer.getSource().clear();
-    
-                    registros.forEach(function(r){
-                        features.forEach(function(f){
-                            if (r.clave_catastral === f.get('CCAT') || r.clave_catastral === f.get('ccat' )){
+
+                    registros.forEach(function (r) {
+                        features.forEach(function (f) {
+                            if (r.clave_catastral === f.get('CCAT') || r.clave_catastral === f.get('ccat')) {
                                 f.setId(r.id);
                                 f.set('id', r.id);
                                 Mapa.Status.WorkLayer.getSource().addFeature(f);
                             }
                         })
                     });
-    
+
                     Mapa.Map.renderSync();
-            
+
                     let extent = Mapa.Status.WorkLayer.getSource().getExtent();
                     Mapa.Map.getView().fit(extent, Mapa.Map.getSize());
 
                     Mapa.Actions.ShowShpImport()
-                    
-                } else if (Mapa.Status.WorkLayer.id === 'VectorConstruccion'){
-                    registros = httpGet(APIurl + '/construccion/construcciones_x_tramite/' + Mapa.Params.id_tramite,'JSON')
+
+                } else if (Mapa.Status.WorkLayer.id === 'VectorConstruccion') {
+                    registros = httpGet(APIurl + '/construccion/construcciones_x_tramite/' + Mapa.Params.id_tramite, 'JSON')
 
                     Mapa.Status.WorkLayer.getSource().clear();
-    
-                    registros.forEach(function(r){
-                        features.forEach(function(f){
-                            if (r.clave_catastral === f.get('cc')){
-                                if(!f.getId() || f.getId() === 0 || r.id === f.get('id')) {
-                                    Mapa.Status.WorkLayer.getSource().addFeature(f);    
+
+                    registros.forEach(function (r) {
+                        features.forEach(function (f) {
+                            if (r.clave_catastral === f.get('cc')) {
+                                if (!f.getId() || f.getId() === 0 || r.id === f.get('id')) {
+                                    Mapa.Status.WorkLayer.getSource().addFeature(f);
                                 }
                             }
                         })
                     });
-    
+
                     Mapa.Map.renderSync();
                     Mapa.Actions.ShowShpImport()
                 }
@@ -307,8 +400,8 @@ class SpatialComponent {
         };
 
 
-        Mapa.Actions.SearchClaveCatastral = function(cc) {
-            if(cc.length < cc_min_length_to_search) {
+        Mapa.Actions.SearchClaveCatastral = function (cc) {
+            if (cc.length < cc_min_length_to_search) {
                 return;
             }
 
@@ -322,9 +415,9 @@ class SpatialComponent {
             SearchResults.innerHTML = '';
             let result = httpGet(APIurl + '/predio/searchClaveCatastral/' + cc, 'JSON');
 
-            if(result.length && result.length > 0) {
+            if (result.length && result.length > 0) {
                 let format = new ol.format.WKT();
-                result.forEach(function(r){
+                result.forEach(function (r) {
                     let div = document.createElement('div');
                     div.className = "w3-small w3-light-gray";
 
@@ -342,10 +435,10 @@ class SpatialComponent {
                     let tabla = document.createElement('table');
                     tabla.style.display = 'none';
 
-                    for(let f in r) {
-                        if (f!=='geom' && f!=='id') {
+                    for (let f in r) {
+                        if (f !== 'geom' && f !== 'id') {
                             let value = r[f] ? r[f].toString() : '';
-                            let row = "<tr><td class='w3-grey'>" + f.replace(/_/g,' ').toUpperCase() + "</td><td>" + value + "</td></tr>";
+                            let row = "<tr><td class='w3-grey'>" + f.replace(/_/g, ' ').toUpperCase() + "</td><td>" + value + "</td></tr>";
                             tabla.innerHTML += row;
                         }
                     };
@@ -358,7 +451,7 @@ class SpatialComponent {
                         oMapa.IdentifyLayer.getSource().removeFeature(feature);
                     });
 
-                    rButton.onclick = function(){
+                    rButton.onclick = function () {
                         tabla.style.display = tabla.style.display === 'none' ? '' : 'none';
                         Mapa.Map.getView().fit(new ol.extent.buffer(feature.getGeometry().getExtent(), 50), Mapa.Map.getSize());
                     }
@@ -372,37 +465,37 @@ class SpatialComponent {
 
         }
 
-        Mapa.Actions.setId = function(id) {
+        Mapa.Actions.setId = function (id) {
             Mapa.Status.Select.features.getArray()[0].setId(id);
-            Mapa.Status.Select.features.getArray()[0].set('id',id);
+            Mapa.Status.Select.features.getArray()[0].set('id', id);
         }
 
-        Mapa.Actions.setPrincipal = function(layerList){
-            layerList.forEach(function(lyr) {
+        Mapa.Actions.setPrincipal = function (layerList) {
+            layerList.forEach(function (lyr) {
                 const layer = Mapa.Layers[lyr];
-                if(layer.geometry.detaillsLayers) {
-                    layer.getSource().forEachFeature(function(feature){
-                        if(layer.geometry.order && feature.getGeometry().getType() === 'Polygon'){
-                            Mapa.Actions.orderVertex(feature,layer.geometry.order,layer.geometry.clockwise);
+                if (layer.geometry.detaillsLayers) {
+                    layer.getSource().forEachFeature(function (feature) {
+                        if (layer.geometry.order && feature.getGeometry().getType() === 'Polygon') {
+                            Mapa.Actions.orderVertex(feature, layer.geometry.order, layer.geometry.clockwise);
                         }
-                        if (feature.getGeometry().getType() === 'Polygon'){
+                        if (feature.getGeometry().getType() === 'Polygon') {
                             let cs = feature.getGeometry().getCoordinates()[0]
                             Mapa.Status.MemorySketch.geometry = feature.getGeometry();
 
                             let cx1 = Math.round(cs[0][0] * 100) / 100;
                             let cy1 = Math.round(cs[0][1] * 100) / 100;
                             let cx2, cy2, ca, cd;
-        
+
                             document.getElementById('CCVertices').innerHTML = "<tr style='background-color:grey;'><td style='width:60px;'></td><td style='text-align:right;width:65px;'>1</td><td style='text-align:right;width:65px;'></td><td style='text-align:right;width:115px;'></td><td style='text-align:right;width:115px;'>" + cx1.toFixed(2) + "</td><td style='text-align:right;width:115px;'>" + cy1.toFixed(2) + "</td></tr>";
 
-                            for(let i = 1; i<cs.length-1;i++){
+                            for (let i = 1; i < cs.length - 1; i++) {
                                 cx2 = Math.round(cs[i][0] * 100) / 100;
                                 cy2 = Math.round(cs[i][1] * 100) / 100;
-                                
-                                ca = Math.round((Mapa.Math.A(Mapa.Math.M(cx1, cy1, cx2, cy2), cx1, cy1, cx2, cy2) * 100)) / 100;
-                                cd = Math.round((Mapa.Math.D(cx1, cy1, cx2, cy2) * 100)) /100;
 
-                                document.getElementById('CCVertices').innerHTML += "<tr style='background-color:" + ((i % 2 === 0) ? 'grey' : 'lightgrey') + ";'><td style='width:60px;'></td><td style='text-align:right;width:65px;'>" + (i+1) + "</td><td style='text-align:right;width:65px;'>" + ca + "</td><td style='text-align:right;width:115px;'>" + cd.toFixed(2) + "</td><td style='text-align:right;width:115px;'>" + cx2.toFixed(2) + "</td><td style='text-align:right;width:115px;'>" + cy2.toFixed(2) + "</td></tr>";
+                                ca = Math.round((Mapa.Math.A(Mapa.Math.M(cx1, cy1, cx2, cy2), cx1, cy1, cx2, cy2) * 100)) / 100;
+                                cd = Math.round((Mapa.Math.D(cx1, cy1, cx2, cy2) * 100)) / 100;
+
+                                document.getElementById('CCVertices').innerHTML += "<tr style='background-color:" + ((i % 2 === 0) ? 'grey' : 'lightgrey') + ";'><td style='width:60px;'></td><td style='text-align:right;width:65px;'>" + (i + 1) + "</td><td style='text-align:right;width:65px;'>" + ca + "</td><td style='text-align:right;width:115px;'>" + cd.toFixed(2) + "</td><td style='text-align:right;width:115px;'>" + cx2.toFixed(2) + "</td><td style='text-align:right;width:115px;'>" + cy2.toFixed(2) + "</td></tr>";
 
                                 cx1 = cx2;
                                 cy1 = cy2;
@@ -410,51 +503,51 @@ class SpatialComponent {
 
                             let tools = document.getElementsByClassName('CCs');
 
-                            for (let i = 0; i < tools.length;i++){
-                                if(tools[i].className.indexOf('Polygon') === -1 ){
-                                    tools[i].style.display='none';
+                            for (let i = 0; i < tools.length; i++) {
+                                if (tools[i].className.indexOf('Polygon') === -1) {
+                                    tools[i].style.display = 'none';
                                 } else {
-                                    tools[i].style.display='';
-                                }   
+                                    tools[i].style.display = '';
+                                }
                             }
                         }
-                        Mapa.Actions.drawNodes(feature.getGeometry(),true,layer);
-                   });
+                        Mapa.Actions.drawNodes(feature.getGeometry(), true, layer);
+                    });
                 };
             });
         }
 
-        Mapa.Actions.Save = function() {
-            for (let key in Mapa.Layers){
-                if(Mapa.Layers[key].Save) {
+        Mapa.Actions.Save = function () {
+            for (let key in Mapa.Layers) {
+                if (Mapa.Layers[key].Save) {
                     Mapa.Layers[key].Save();
                     sleep(10);
                 }
             }
         }
 
-        Mapa.Actions.UpdateUI = function(){
-            for(let ctlId in Mapa.UI.Controls){
-                if(Mapa.UI.Controls[ctlId].update){
+        Mapa.Actions.UpdateUI = function () {
+            for (let ctlId in Mapa.UI.Controls) {
+                if (Mapa.UI.Controls[ctlId].update) {
                     Mapa.UI.Controls[ctlId].update();
                 }
             }
         }
 
-        Mapa.Actions.Identify = function(){
+        Mapa.Actions.Identify = function () {
             Mapa.Actions.ClearInteractions();
 
             let identifyResults = document.getElementById('IdentifyResults');
-        
+
             let evtKey = Mapa.Map.on('singleclick', function (evt) {
                 Mapa.UI.TOCPannel.style.display = 'none'
                 Mapa.UI.IdentifyPannel.style.display = '';
 
                 let view = Mapa.Map.getView();
                 let viewResolution = view.getResolution();
-        
+
                 let conShift = ol.events.condition.shiftKeyOnly(evt);
-        
+
                 if (!conShift) {
                     identifyResults.innerHTML = '';
                     Mapa.IdentifyLayer.getSource().clear();
@@ -480,17 +573,17 @@ class SpatialComponent {
                                 let div = document.createElement('div');
                                 div.className = "w3-small w3-light-gray";
                                 let html = '<table>';
-            
-                                for(let f in r.properties){
-                                    if (f!=='geom' && f!=='id') {
+
+                                for (let f in r.properties) {
+                                    if (f !== 'geom' && f !== 'id') {
                                         let value = r.properties[f] ? r.properties[f].toString() : '';
-                                        let row = "<tr><td class='w3-grey'>" + f.replace(/_/g,' ').toUpperCase() + "</td><td>" + value + "</td></tr>";
+                                        let row = "<tr><td class='w3-grey'>" + f.replace(/_/g, ' ').toUpperCase() + "</td><td>" + value + "</td></tr>";
                                         html += row;
                                     }
                                 }
 
                                 html += "</table>";
-                                
+
                                 identifyResults.innerHTML = identifyResults.innerHTML + html;
                             });
                         }
@@ -500,10 +593,10 @@ class SpatialComponent {
             Mapa.Interactions.evtKeys.identifyEvent = evtKey;
         }
 
-        Mapa.Actions.getEditableLayers = function(){
+        Mapa.Actions.getEditableLayers = function () {
             let lista = [];
-            for (let key in Mapa.Layers){
-                if (Mapa.Layers[key].editable){
+            for (let key in Mapa.Layers) {
+                if (Mapa.Layers[key].editable) {
                     lista.push(Mapa.Layers[key]);
                 }
             }
@@ -515,57 +608,57 @@ class SpatialComponent {
             Mapa.Map.getView().setZoom(Mapa.JSONConfig.DefaultView.DefaultZoom);
         };
 
-        Mapa.Actions.ShowHideTOC = function(){
+        Mapa.Actions.ShowHideTOC = function () {
             Mapa.UI.TOCPannel.style.display = (Mapa.UI.TOCPannel.style.display === 'none' ? '' : 'none');
             Mapa.UI.IdentifyPannel.style.display = 'none';
             Mapa.UI.SearchPannel.style.display = 'none';
         }
 
-        Mapa.Actions.ShowHideCC = function(){
+        Mapa.Actions.ShowHideCC = function () {
             Mapa.UI.Left.style.display = (Mapa.UI.Left.style.display === 'none' ? '' : 'none');
         }
 
-        Mapa.Actions.ExportMap = function(guardar){
-                document.body.style.cursor = 'progress';
+        Mapa.Actions.ExportMap = function (guardar) {
+            document.body.style.cursor = 'progress';
 
-                let format = 'a4';
-                let resolution = 150;
-                let dim = [297, 210];
-                let width = Math.round(dim[0] * resolution / 25.4);
-                let height = Math.round(dim[1] * resolution / 25.4);
-                let size = Mapa.Map.getSize();
-                let viewResolution = Mapa.Map.getView().getResolution();
-            
-                Mapa.Map.once('rendercomplete', function () {
-                    let mapCanvas = document.createElement('canvas');
-                    mapCanvas.width = width;
-                    mapCanvas.height = height;
-                    let mapContext = mapCanvas.getContext('2d');
-            
-                    Array.prototype.forEach.call(document.querySelectorAll('.ol-layer canvas'), function (canvas) {
-                        if (canvas.width > 0) {
-                            let opacity = canvas.parentNode.style.opacity;
-                            mapContext.globalAlpha = opacity === '' ? 1 : Number(opacity);
-                            let transform = canvas.style.transform;
-                            // Get the transform parameters from the style's transform matrix
-                            let matrix = transform.match(/^matrix\(([^\(]*)\)$/)[1].split(',').map(Number);
-                            // Apply the transform to the export map context
-                            CanvasRenderingContext2D.prototype.setTransform.apply(mapContext, matrix);
-                            mapContext.drawImage(canvas, 0, 0);
-                        }
-                    });
-                    //let pdf = new jsPDF('landscape', undefined, format);
-                    let imagen = mapCanvas.toDataURL();
-            
-                    // Reset original map size
-                    Mapa.Map.setSize(size);
-                    Mapa.Map.getView().setResolution(viewResolution);
+            let format = 'a4';
+            let resolution = 150;
+            let dim = [297, 210];
+            let width = Math.round(dim[0] * resolution / 25.4);
+            let height = Math.round(dim[1] * resolution / 25.4);
+            let size = Mapa.Map.getSize();
+            let viewResolution = Mapa.Map.getView().getResolution();
 
-                    document.body.style.cursor = 'default';
+            Mapa.Map.once('rendercomplete', function () {
+                let mapCanvas = document.createElement('canvas');
+                mapCanvas.width = width;
+                mapCanvas.height = height;
+                let mapContext = mapCanvas.getContext('2d');
 
-                    if(guardar) {
-			let cc = [];
-            		if(Mapa.Status.MemorySketch.geometry){
+                Array.prototype.forEach.call(document.querySelectorAll('.ol-layer canvas'), function (canvas) {
+                    if (canvas.width > 0) {
+                        let opacity = canvas.parentNode.style.opacity;
+                        mapContext.globalAlpha = opacity === '' ? 1 : Number(opacity);
+                        let transform = canvas.style.transform;
+                        // Get the transform parameters from the style's transform matrix
+                        let matrix = transform.match(/^matrix\(([^\(]*)\)$/)[1].split(',').map(Number);
+                        // Apply the transform to the export map context
+                        CanvasRenderingContext2D.prototype.setTransform.apply(mapContext, matrix);
+                        mapContext.drawImage(canvas, 0, 0);
+                    }
+                });
+                //let pdf = new jsPDF('landscape', undefined, format);
+                let imagen = mapCanvas.toDataURL();
+
+                // Reset original map size
+                Mapa.Map.setSize(size);
+                Mapa.Map.getView().setResolution(viewResolution);
+
+                document.body.style.cursor = 'default';
+
+                if (guardar) {
+                    let cc = [];
+                    if (Mapa.Status.MemorySketch.geometry) {
                         let cs = Mapa.Status.MemorySketch.geometry.getCoordinates()[0];
 
                         let cx1 = Math.round(cs[0][0] * 100) / 100;
@@ -573,24 +666,24 @@ class SpatialComponent {
                         let cx2, cy2, ca, cd;
 
                         cc = [{
-                            'vertice':1,
-                            'angulo':0,
-                            'distancia' : 0,
+                            'vertice': 1,
+                            'angulo': 0,
+                            'distancia': 0,
                             'x': cx1.toFixed(2),
                             'y': cy1.toFixed(2)
                         }];
 
-                        for(let i = 1; i<cs.length;i++){
+                        for (let i = 1; i < cs.length; i++) {
                             cx2 = Math.round(cs[i][0] * 100) / 100;
                             cy2 = Math.round(cs[i][1] * 100) / 100;
-                            
+
                             ca = Math.round(Mapa.Math.A(Mapa.Math.M(cx1, cy1, cx2, cy2), cx1, cy1, cx2, cy2) * 100) / 100;
-                            cd = Math.round(Mapa.Math.D(cx1, cy1, cx2, cy2) * 100) /100;
+                            cd = Math.round(Mapa.Math.D(cx1, cy1, cx2, cy2) * 100) / 100;
 
                             cc.push({
-                                'vertice':i+1,
-                                'angulo':ca,
-                                'distancia' : cd.toFixed(2),
+                                'vertice': i + 1,
+                                'angulo': ca,
+                                'distancia': cd.toFixed(2),
                                 'x': cx2.toFixed(2),
                                 'y': cy2.toFixed(2)
                             });
@@ -598,48 +691,48 @@ class SpatialComponent {
                             cx1 = cx2;
                             cy1 = cy2;
                         }
-			}
-                        let data = {
-                            id: Mapa.Params.id,
-                            id_tramite: Mapa.Params.id_tramite,
-                            img: imagen,
-                            cc: cc
-                        };
-			
-                        let url = APIurl + '/predio/save_image';
-
-                        var xmlHttp = new XMLHttpRequest();
-                        xmlHttp.open("POST", url, false); // false for synchronous request
-                        xmlHttp.setRequestHeader("Content-type", "application/json");
-                        xmlHttp.send(JSON.stringify(data));
-			let respuesta = xmlHttp.responseText;
-			console.log(respuesta);
-                    } else {
-                        if(document.getElementById('btnDownloadImage')) {
-                            document.getElementById('btnDownloadImage').setAttribute('download','map.png');
-                            document.getElementById('btnDownloadImage').href = imagen;
-                            document.getElementById('btnDownloadImage').click();
-                        } else {
-                            return imagen;
-                        }
                     }
-                });
-            
-                Mapa.Map.renderSync();
-            
-                // Set print size
-                var printSize = [width, height];
-                Mapa.Map.setSize(printSize);
-                var scaling = Math.min(width / size[0], height / size[1]);
-                Mapa.Map.getView().setResolution(viewResolution / scaling);
+                    let data = {
+                        id: Mapa.Params.id,
+                        id_tramite: Mapa.Params.id_tramite,
+                        img: imagen,
+                        cc: cc
+                    };
+
+                    let url = APIurl + '/predio/save_image/' + Mapa.Params.jid;
+
+                    var xmlHttp = new XMLHttpRequest();
+                    xmlHttp.open("POST", url, false); // false for synchronous request
+                    xmlHttp.setRequestHeader("Content-type", "application/json");
+                    xmlHttp.send(JSON.stringify(data));
+                    let respuesta = xmlHttp.responseText;
+                    console.log(respuesta);
+                } else {
+                    if (document.getElementById('btnDownloadImage')) {
+                        document.getElementById('btnDownloadImage').setAttribute('download', 'map.png');
+                        document.getElementById('btnDownloadImage').href = imagen;
+                        document.getElementById('btnDownloadImage').click();
+                    } else {
+                        return imagen;
+                    }
+                }
+            });
+
+            Mapa.Map.renderSync();
+
+            // Set print size
+            var printSize = [width, height];
+            Mapa.Map.setSize(printSize);
+            var scaling = Math.min(width / size[0], height / size[1]);
+            Mapa.Map.getView().setResolution(viewResolution / scaling);
         }
 
-        Mapa.Actions.ClearInteractions = function(){
+        Mapa.Actions.ClearInteractions = function () {
             for (let key in Mapa.Interactions.evtKeys) {
                 ol.Observable.unByKey(Mapa.Interactions.evtKeys[key]);
                 delete Mapa.Interactions.evtKeys[key];
             }
-        
+
             for (let key in Mapa.Interactions.interactions) {
                 Mapa.Map.removeInteraction(Mapa.Interactions.interactions[key]);
                 delete Mapa.Interactions.interactions[key];
@@ -650,23 +743,23 @@ class SpatialComponent {
             Mapa.UI.MapViewContainer.style.cursor = 'default';
         }
 
-        Mapa.Actions.ActiveSnaps = function(){
-            Mapa.Interactions.snaps.forEach(function(snap){
+        Mapa.Actions.ActiveSnaps = function () {
+            Mapa.Interactions.snaps.forEach(function (snap) {
                 try {
                     Mapa.Map.removeInteraction(snap);
-                } catch(e){
+                } catch (e) {
                     console.log(e)
                 }
             });
 
             Mapa.Interactions.snaps = [];
 
-            for(let key in Mapa.Layers){
+            for (let key in Mapa.Layers) {
                 let l = Mapa.Layers[key];
-                if (l.type==='MVC' || l.type === 'Vector'){
+                if (l.type === 'MVC' || l.type === 'Vector') {
                     if (l.getVisible() === true) {
                         let snap = new ol.interaction.Snap({
-                            source:l.getSource()
+                            source: l.getSource()
                         });
 
                         Mapa.Interactions.snaps.push(snap);
@@ -676,7 +769,7 @@ class SpatialComponent {
             }
         }
 
-        Mapa.Actions.GoogleMapsLink = function(){
+        Mapa.Actions.GoogleMapsLink = function () {
             Mapa.Actions.ClearInteractions();
 
             let evtKey = Mapa.Map.on('singleclick', function (evt) {
@@ -688,23 +781,23 @@ class SpatialComponent {
             Mapa.Interactions.evtKeys.googleMaps = evtKey;
         }
 
-        Mapa.Actions.setEditableLayer = function(layerId){
+        Mapa.Actions.setEditableLayer = function (layerId) {
             Mapa.Actions.ClearInteractions();
 
             Mapa.Status.WorkLayer = Mapa.Layers[layerId];
 
-            if(Mapa.Status.WorkLayer.getSource().getFeatures().length > 0){
-               Mapa.Actions.seleccionar();
+            if (Mapa.Status.WorkLayer.getSource().getFeatures().length > 0) {
+                Mapa.Actions.seleccionar();
             }
 
             Mapa.Actions.UpdateUI();
         }
 
-        Mapa.Actions.orderVertex = function (feature,order,clockwise) {
+        Mapa.Actions.orderVertex = function (feature, order, clockwise) {
             let y = 0;
             let x = 0;
             let pos = 0;
-    
+
             feature.getGeometry().getCoordinates()[0].forEach(function (c, index) {
                 switch (order) {
                     case 'north':
@@ -733,10 +826,10 @@ class SpatialComponent {
                         break;
                 }
             });
-    
+
             let arr1 = [];
             let arr2 = [];
-    
+
             feature.getGeometry().getCoordinates()[0].forEach(function (c, index) {
                 if (index >= pos) {
                     arr1.push(c);
@@ -744,28 +837,28 @@ class SpatialComponent {
                     arr2.push(c);
                 }
             });
-    
+
             arr2.forEach(function (c, index) {
                 arr1.push(c);
             });
-    
+
             let clockwiseDirection = arr1[0][0] < arr1[1][0] ? true : false;
-    
+
             if (clockwise && !clockwiseDirection) {
                 arr2 = [arr1[0]];
-    
+
                 for (let i = arr1.length - 1; i > 0; i--) {
                     arr2.push(arr1[i]);
                 }
-    
+
                 arr1 = arr2;
             }
-    
-    
+
+
             if (arr1[0][0] !== arr1[arr1.length - 1][0] || arr1[0][1] !== arr1[arr1.length - 1][1]) {
                 arr1.push(arr1[0]);
             }
-    
+
             let coordenadas = [];
             for (let i = 0; i < arr1.length; i++) {
                 if (i > 0) {
@@ -776,7 +869,7 @@ class SpatialComponent {
                     coordenadas.push(arr1[i]);
                 }
             }
-    
+
             feature.getGeometry().setCoordinates([coordenadas]);
 
             return feature;
@@ -786,7 +879,7 @@ class SpatialComponent {
             let Cotas = layer && layer.geometry && layer.geometry.detaillsLayers && layer.geometry.detaillsLayers.dimension ? Mapa.Layers[layer.geometry.detaillsLayers.dimension] : Mapa.Layers.Temp;
             let Vertices = layer && layer.geometry && layer.geometry.detaillsLayers && layer.geometry.detaillsLayers.vertex ? Mapa.Layers[layer.geometry.detaillsLayers.vertex] : Mapa.Layers.Temp;
             let Areas = layer && layer.geometry && layer.geometry.detaillsLayers && layer.geometry.detaillsLayers.area ? Mapa.Layers[layer.geometry.detaillsLayers.area] : Mapa.Layers.Temp;
-        
+
             if (!keep) {
                 Vertices.getSource().clear();
                 Cotas.getSource().clear();
@@ -797,20 +890,20 @@ class SpatialComponent {
                         Vertices.getSource().removeFeature(feature);
                     }
                 });
-        
+
                 Cotas.getSource().forEachFeature(function (feature) {
                     if (feature.idPadre === g.id && feature.get('identifySrc') === 'drawNodes') {
                         Cotas.getSource().removeFeature(feature);
                     }
                 });
-        
+
                 Areas.getSource().forEachFeature(function (feature) {
                     if (feature.idPadre === g.id && feature.get('identifySrc') === 'drawNodes') {
                         Areas.getSource().removeFeature(feature);
                     }
                 });
             }
-        
+
             let textStyle = function (id, placement) {
                 return new ol.style.Text({
                     font: "bold 20px Calibri",
@@ -826,35 +919,39 @@ class SpatialComponent {
                     }),
                 });
             };
-        
+
             let cordenadas;
-        
+
+            if (g.getType() === 'MultiPolygon'){
+                g = g.getPolygon(0);
+            }
+
             if (g.getType() === 'Polygon') {
                 cordenadas = g.getCoordinates()[0];
             } else if (g.getType() === 'Circle') {
                 cordenadas = [];
-        
+
                 cordenadas.push(g.getCenter());
                 let ca = 45;
                 let cd = g.getRadius();
-        
+
                 let cx2 = Math.round((g.getCenter()[0] + Mapa.Math.X(cd, ca) * 100) / 100);
                 let cy2 = Math.round((g.getCenter()[1] + Mapa.Math.Y(cd, ca) * 100) / 100);
-        
+
                 cordenadas.push([cx2, cy2]);
             }
             else {
                 cordenadas = g.getCoordinates();
             }
-        
+
             if (g.getType() === 'Point') {
                 let feature = new ol.Feature({
                     identifySrc: 'drawNodes',
                     geometry: new ol.geom.Point(cordenadas)
                 });
-        
+
                 feature.idPadre = g.id;
-        
+
                 feature.setStyle(
                     new ol.style.Style({
                         stroke: new ol.style.Stroke({
@@ -869,20 +966,20 @@ class SpatialComponent {
                         }),
                         text: textStyle(g.label ? g.label : g.etiqueta ? g.etiqueta : g.id ? g.id : '', 'point')
                     }));
-        
+
                 Vertices.getSource().addFeature(feature);
             }
-        
-        
+
+
             if (g.getType() === 'Polygon' || g.getType() === 'LineString') {
                 for (let i = 0; i < cordenadas.length - 1; i++) {
                     let feature = new ol.Feature({
                         identifySrc: 'drawNodes',
                         geometry: new ol.geom.Point(cordenadas[i])
                     });
-        
+
                     feature.idPadre = g.id;
-        
+
                     feature.setStyle(
                         new ol.style.Style({
                             stroke: new ol.style.Stroke({
@@ -897,20 +994,20 @@ class SpatialComponent {
                             }),
                             text: textStyle((i + 1), 'point')
                         }));
-        
+
                     Vertices.getSource().addFeature(feature);
                 }
             }
-        
+
             if (g.getType() === 'LineString') {
                 for (let i = 0; i < cordenadas.length; i++) {
                     let feature = new ol.Feature({
                         identifySrc: 'drawNodes',
                         geometry: new ol.geom.Point(cordenadas[i])
                     });
-        
+
                     feature.idPadre = g.id;
-        
+
                     feature.setStyle(
                         new ol.style.Style({
                             stroke: new ol.style.Stroke({
@@ -925,28 +1022,28 @@ class SpatialComponent {
                             }),
                             text: textStyle((i + 1), 'point')
                         }));
-        
+
                     Vertices.getSource().addFeature(feature);
                 }
             }
-        
+
             if (g.getType() !== 'Point') {
                 let lastca = 0;
                 let coordLine = [];
-        
+
                 for (let i = 0; i < cordenadas.length; i++) {
                     if (i < (cordenadas.length - 1)) {
                         let ca = Mapa.Math.A(Mapa.Math.M(cordenadas[i][0], cordenadas[i][1], cordenadas[i + 1][0], cordenadas[i + 1][1]), cordenadas[i][0], cordenadas[i][1], cordenadas[i + 1][0], cordenadas[i + 1][1]);
-        
+
                         coordLine.push(cordenadas[i]);
                         if (Math.abs(lastca - ca) > 10 && i > 0) {
                             let feature = new ol.Feature({
                                 identifySrc: 'drawNodes',
                                 geometry: new ol.geom.LineString(coordLine)
                             });
-        
+
                             feature.idPadre = g.id;
-        
+
                             feature.setStyle(
                                 new ol.style.Style({
                                     stroke: new ol.style.Stroke({
@@ -956,22 +1053,22 @@ class SpatialComponent {
                                     text: textStyle(Mapa.Math.formatLength(feature.getGeometry()), 'line')
                                 }));
                             Cotas.getSource().addFeature(feature);
-        
+
                             coordLine = [];
                             coordLine.push(cordenadas[i]);
-        
+
                         }
                         lastca = ca;
                     } else {
-        
+
                         coordLine.push(cordenadas[i]);
                         let feature = new ol.Feature({
                             identifySrc: 'drawNodes',
                             geometry: new ol.geom.LineString(coordLine)
                         });
-        
+
                         feature.idPadre = g.id;
-        
+
                         feature.setStyle(
                             new ol.style.Style({
                                 stroke: new ol.style.Stroke({
@@ -984,15 +1081,15 @@ class SpatialComponent {
                     }
                 }
             }
-        
+
             if (g.getType() === 'Polygon') {
                 let feature = new ol.Feature({
                     identifySrc: 'drawNodes',
                     geometry: g.getInteriorPoint().clone()
                 });
-        
+
                 feature.idPadre = g.id;
-        
+
                 feature.setStyle(
                     new ol.style.Style({
                         stroke: new ol.style.Stroke({
@@ -1007,18 +1104,18 @@ class SpatialComponent {
                         }),
                         text: textStyle(Mapa.Math.formatNumber(Math.round(g.getArea() * 100) / 100, 2) + 'm2', 'point')
                     }));
-        
+
                 Areas.getSource().addFeature(feature);
             }
-        
+
             if (g.getType() === 'LineString') {
                 let feature = new ol.Feature({
                     identifySrc: 'drawNodes',
                     geometry: new ol.geom.Point(g.getLastCoordinate())
                 });
-        
+
                 feature.idPadre = g.id;
-        
+
                 feature.setStyle(
                     new ol.style.Style({
                         stroke: new ol.style.Stroke({
@@ -1033,19 +1130,19 @@ class SpatialComponent {
                         }),
                         text: textStyle(Mapa.Math.formatLength(g), 'point')
                     }));
-        
+
                 Cotas.getSource().addFeature(feature);
-        
+
             }
-        
+
             if (g.getType() === 'Circle' || g.type === 'Circle') {
                 let feature = new ol.Feature({
                     identifySrc: 'drawNodes',
                     geometry: new ol.geom.Point(g.getCenter())
                 });
-        
+
                 feature.idPadre = g.id;
-        
+
                 feature.setStyle(
                     new ol.style.Style({
                         stroke: new ol.style.Stroke({
@@ -1060,231 +1157,231 @@ class SpatialComponent {
                         }),
                         text: textStyle(Mapa.Math.formatNumber(Math.round(Math.PI * (g.getRadius() * g.getRadius()) * 100) / 100, 2) + ' m2', 'point')
                     }));
-        
+
                 Cotas.getSource().addFeature(feature);
-        
+
             }
-        
+
             return;
         };
 
-        Mapa.Actions.draw = function(type){
-                Mapa.Actions.ClearInteractions();
+        Mapa.Actions.draw = function (type) {
+            Mapa.Actions.ClearInteractions();
 
-                Mapa.Interactions.interactions.modify = new ol.interaction.Modify({
-                    id: 'modify',
-                    source: Mapa.Status.WorkLayer.getSource()
-                });
-            
-                Mapa.Map.addInteraction(Mapa.Interactions.interactions.modify);
-            
-                Mapa.Interactions.interactions.draw = new ol.interaction.Draw({
-                    id: 'draw',
-                    source: Mapa.Status.WorkLayer.getSource(),
-                    type: type,
-                    freehandCondition: ol.events.condition.platformModifierKeyOnly,
-                    stopClick: true,
-                    style: new ol.style.Style({
-                        fill: new ol.style.Fill({
-                            color: 'rgba(0,0,0, 0.2)'
-                        }),
-                        stroke: new ol.style.Stroke({
-                            color: '#ffcc33',
-                            width: 2
-                        }),
-                        image: new ol.style.Circle({
-                            radius: 7,
-                            fill: new ol.style.Fill({
-                                color: '#ffcc33'
-                            })
-                        })
+            Mapa.Interactions.interactions.modify = new ol.interaction.Modify({
+                id: 'modify',
+                source: Mapa.Status.WorkLayer.getSource()
+            });
+
+            Mapa.Map.addInteraction(Mapa.Interactions.interactions.modify);
+
+            Mapa.Interactions.interactions.draw = new ol.interaction.Draw({
+                id: 'draw',
+                source: Mapa.Status.WorkLayer.getSource(),
+                type: type,
+                freehandCondition: ol.events.condition.platformModifierKeyOnly,
+                stopClick: true,
+                style: new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: 'rgba(0,0,0, 0.2)'
                     }),
-                    geometryFunction: function (c, g) {
-                        
-                        let tools = document.getElementsByClassName('CCs')
+                    stroke: new ol.style.Stroke({
+                        color: '#ffcc33',
+                        width: 2
+                    }),
+                    image: new ol.style.Circle({
+                        radius: 7,
+                        fill: new ol.style.Fill({
+                            color: '#ffcc33'
+                        })
+                    })
+                }),
+                geometryFunction: function (c, g) {
 
-                        for (let i = 0; i < tools.length;i++){
-                            if(tools[i].className.indexOf(type) === -1 ){
-                                tools[i].style.display='none';
-                            } else {
-                                tools[i].style.display='';
-                            }   
-                        }
+                    let tools = document.getElementsByClassName('CCs')
 
-                        if (type === 'Circle') {
-                            let center = c[0];
-                            let last = c[1];
-                            let dx = center[0] - last[0];
-                            let dy = center[1] - last[1];
-                            let radius = Mapa.Status.MemorySketch.radio && Mapa.Status.MemorySketch.radio > 0 ? Mapa.Status.MemorySketch.radio : Math.round(Math.sqrt(dx * dx + dy * dy),2);
-                        
-                            if (!g) {
-                                g = new ol.geom.Circle(center, radius);
-                                g.type = 'Circle';
-                        
-                                g.on('change', function () {
-                                    Mapa.Actions.drawNodes(this, false, Mapa.Status.WorkLayer);
-                                    if (document.getElementById('DrawTools').style.display === 'block') {
-                                        document.getElementById('Radio').value = '';
-                                        document.getElementById('Radio').focus();
-                                    }
-                                });
-                        
-                                Mapa.Status.MemorySketch.geometry = g;
-                            } else {
-                                g.setCenterAndRadius(center, radius);
-                            }
+                    for (let i = 0; i < tools.length; i++) {
+                        if (tools[i].className.indexOf(type) === -1) {
+                            tools[i].style.display = 'none';
                         } else {
-                            if (g) {
-                                if (type === 'LineString' || type === 'Polygon') {
-                                    document.getElementById('CCVertices').innerHTML = '';
-                                    let cs = type === 'LineString' ? c : c[0];
-            
-                                    if (type === 'Polygon') {
-                                        if (Math.abs(Mapa.Status.MemorySketch.geometry.getCoordinates()[0].length - cs.length) > 1) {
-                                            let clast = cs[cs.length - 1];
-                                            cs = Mapa.Status.MemorySketch.geometry.getCoordinates()[0];
-                                            g.setCoordinates(Mapa.Status.MemorySketch.geometry.getCoordinates()[0]);
-                                            g.getCoordinates()[0].push(clast);
-                                        }
-                                    } else {
-                                        if (Math.abs(Mapa.Status.MemorySketch.geometry.getCoordinates().length - cs.length) > 1) {
-                                            let clast = cs[cs.length - 1];
-                                            cs = Mapa.Status.MemorySketch.geometry.getCoordinates();
-                                            g.setCoordinates(Mapa.Status.MemorySketch.geometry.getCoordinates());
-                                            g.getCoordinates().push(clast);
-                                        }
-                                    }
-            
-                                    let cx1, cy1, cx2, cy2, ca, cd;
-            
-                                    if (Mapa.Status.MemorySketch.vertexCount !== cs.length) {
-                                        g.setCoordinates(Mapa.Status.MemorySketch.geometry.getCoordinates());
-                                        Mapa.Status.MemorySketch.v = null;
-                                        Mapa.Status.MemorySketch.a = null;
-                                        Mapa.Status.MemorySketch.d = null;
-                                        Mapa.Status.MemorySketch.x = null;
-                                        Mapa.Status.MemorySketch.y = null;
-                                        Mapa.Status.MemorySketch.vertexCount = cs.length;
-                                    }
-            
-                                    cs.forEach(function (coord, index) {
-                                        let row = Mapa.addPolygonVertexRow(index);
-                                        cx2 = coord[0];
-                                        cy2 = coord[1];
-            
-                                        //let row = document.getElementById('V' + index);
-            
-                                        if (index > 0) {
-                                            ca = Mapa.Math.A(Mapa.Math.M(cx1, cy1, cx2, cy2), cx1, cy1, cx2, cy2);
-                                            cd = Mapa.Math.D(cx1, cy1, cx2, cy2);
-                                        }
-            
-                                        if (Mapa.Status.MemorySketch.v && Mapa.Status.MemorySketch.v === index && (Mapa.Status.MemorySketch.x || Mapa.Status.MemorySketch.y || Mapa.Status.MemorySketch.a || Mapa.Status.MemorySketch.d)) {
-            
-                                            cx2 = Mapa.Status.MemorySketch.x ? Mapa.Status.MemorySketch.x : cs[cs.length - 1][0];
-                                            cy2 = Mapa.Status.MemorySketch.y ? Mapa.Status.MemorySketch.y : cs[cs.length - 1][1];
-            
-                                            if (index > 0) {
-            
-                                                if (Mapa.Status.MemorySketch.a || Mapa.Status.MemorySketch.d) {
-                                                    ca = Mapa.Status.MemorySketch.a ? Mapa.Status.MemorySketch.a : Mapa.Math.A(Mapa.Math.M(cx1, cy1, cx2, cy2), cx1, cy1, cx2, cy2);
-                                                    cd = Mapa.Status.MemorySketch.d ? Mapa.Status.MemorySketch.d : Mapa.Math.D(cx1, cy1, cx2, cy2);
-                                                }
-            
-                                                cx2 = cx1 + Mapa.Math.X(cd, ca);
-                                                cy2 = cy1 + Mapa.Math.Y(cd, ca);
-            
-                                                cs[index] = [cx2, cy2];
-                                            }
-                                        }
-            
-                                        if (index > 0) {
-                                            row.children[2].children[0].value = Math.round((ca * 100) / 100,2);
-                                            row.children[3].children[0].value = Math.round((cd * 100) / 100,2);
-                                        }
-            
-                                        row.children[4].children[0].value = Math.round((cx2 * 100) / 100,2);
-                                        row.children[5].children[0].value = Math.round((cy2 * 100) / 100,2);
-            
-                                        cx1 = cx2;
-                                        cy1 = cy2;
-                                    });
-            
-                                    if (type === 'Polygon') {
-                                        g.setCoordinates([cs]);
-                                    } else {
-                                        g.setCoordinates(cs);
+                            tools[i].style.display = '';
+                        }
+                    }
+
+                    if (type === 'Circle') {
+                        let center = c[0];
+                        let last = c[1];
+                        let dx = center[0] - last[0];
+                        let dy = center[1] - last[1];
+                        let radius = Mapa.Status.MemorySketch.radio && Mapa.Status.MemorySketch.radio > 0 ? Mapa.Status.MemorySketch.radio : Math.round(Math.sqrt(dx * dx + dy * dy), 2);
+
+                        if (!g) {
+                            g = new ol.geom.Circle(center, radius);
+                            g.type = 'Circle';
+
+                            g.on('change', function () {
+                                Mapa.Actions.drawNodes(this, false, Mapa.Status.WorkLayer);
+                                if (document.getElementById('DrawTools').style.display === 'block') {
+                                    document.getElementById('Radio').value = '';
+                                    document.getElementById('Radio').focus();
+                                }
+                            });
+
+                            Mapa.Status.MemorySketch.geometry = g;
+                        } else {
+                            g.setCenterAndRadius(center, radius);
+                        }
+                    } else {
+                        if (g) {
+                            if (type === 'LineString' || type === 'Polygon') {
+                                document.getElementById('CCVertices').innerHTML = '';
+                                let cs = type === 'LineString' ? c : c[0];
+
+                                if (type === 'Polygon') {
+                                    if (Math.abs(Mapa.Status.MemorySketch.geometry.getCoordinates()[0].length - cs.length) > 1) {
+                                        let clast = cs[cs.length - 1];
+                                        cs = Mapa.Status.MemorySketch.geometry.getCoordinates()[0];
+                                        g.setCoordinates(Mapa.Status.MemorySketch.geometry.getCoordinates()[0]);
+                                        g.getCoordinates()[0].push(clast);
                                     }
                                 } else {
-                                    g.setCoordinates(c);
+                                    if (Math.abs(Mapa.Status.MemorySketch.geometry.getCoordinates().length - cs.length) > 1) {
+                                        let clast = cs[cs.length - 1];
+                                        cs = Mapa.Status.MemorySketch.geometry.getCoordinates();
+                                        g.setCoordinates(Mapa.Status.MemorySketch.geometry.getCoordinates());
+                                        g.getCoordinates().push(clast);
+                                    }
                                 }
-                            } else {
-                                g = eval('new ol.geom.' + type + '(c);');
-                                Mapa.Status.MemorySketch.geometry = g;
-            
-                                if (type === 'LineString' || type === 'Polygon') {
-            
+
+                                let cx1, cy1, cx2, cy2, ca, cd;
+
+                                if (Mapa.Status.MemorySketch.vertexCount !== cs.length) {
+                                    g.setCoordinates(Mapa.Status.MemorySketch.geometry.getCoordinates());
                                     Mapa.Status.MemorySketch.v = null;
                                     Mapa.Status.MemorySketch.a = null;
                                     Mapa.Status.MemorySketch.d = null;
                                     Mapa.Status.MemorySketch.x = null;
                                     Mapa.Status.MemorySketch.y = null;
-                                    Mapa.Status.MemorySketch.vertexCount = c.length;
-            
-                                    document.getElementById('CCVertices').innerHTML = '';
+                                    Mapa.Status.MemorySketch.vertexCount = cs.length;
                                 }
-            
-            
-                                g.on('change', function () {
-                                    Mapa.Actions.drawNodes(this, false, Mapa.Status.WorkLayer);
+
+                                cs.forEach(function (coord, index) {
+                                    let row = Mapa.addPolygonVertexRow(index);
+                                    cx2 = coord[0];
+                                    cy2 = coord[1];
+
+                                    //let row = document.getElementById('V' + index);
+
+                                    if (index > 0) {
+                                        ca = Mapa.Math.A(Mapa.Math.M(cx1, cy1, cx2, cy2), cx1, cy1, cx2, cy2);
+                                        cd = Mapa.Math.D(cx1, cy1, cx2, cy2);
+                                    }
+
+                                    if (Mapa.Status.MemorySketch.v && Mapa.Status.MemorySketch.v === index && (Mapa.Status.MemorySketch.x || Mapa.Status.MemorySketch.y || Mapa.Status.MemorySketch.a || Mapa.Status.MemorySketch.d)) {
+
+                                        cx2 = Mapa.Status.MemorySketch.x ? Mapa.Status.MemorySketch.x : cs[cs.length - 1][0];
+                                        cy2 = Mapa.Status.MemorySketch.y ? Mapa.Status.MemorySketch.y : cs[cs.length - 1][1];
+
+                                        if (index > 0) {
+
+                                            if (Mapa.Status.MemorySketch.a || Mapa.Status.MemorySketch.d) {
+                                                ca = Mapa.Status.MemorySketch.a ? Mapa.Status.MemorySketch.a : Mapa.Math.A(Mapa.Math.M(cx1, cy1, cx2, cy2), cx1, cy1, cx2, cy2);
+                                                cd = Mapa.Status.MemorySketch.d ? Mapa.Status.MemorySketch.d : Mapa.Math.D(cx1, cy1, cx2, cy2);
+                                            }
+
+                                            cx2 = cx1 + Mapa.Math.X(cd, ca);
+                                            cy2 = cy1 + Mapa.Math.Y(cd, ca);
+
+                                            cs[index] = [cx2, cy2];
+                                        }
+                                    }
+
+                                    if (index > 0) {
+                                        row.children[2].children[0].value = Math.round((ca * 100) / 100, 2);
+                                        row.children[3].children[0].value = Math.round((cd * 100) / 100, 2);
+                                    }
+
+                                    row.children[4].children[0].value = Math.round((cx2 * 100) / 100, 2);
+                                    row.children[5].children[0].value = Math.round((cy2 * 100) / 100, 2);
+
+                                    cx1 = cx2;
+                                    cy1 = cy2;
                                 });
-            
+
+                                if (type === 'Polygon') {
+                                    g.setCoordinates([cs]);
+                                } else {
+                                    g.setCoordinates(cs);
+                                }
+                            } else {
+                                g.setCoordinates(c);
                             }
+                        } else {
+                            g = eval('new ol.geom.' + type + '(c);');
+                            Mapa.Status.MemorySketch.geometry = g;
+
+                            if (type === 'LineString' || type === 'Polygon') {
+
+                                Mapa.Status.MemorySketch.v = null;
+                                Mapa.Status.MemorySketch.a = null;
+                                Mapa.Status.MemorySketch.d = null;
+                                Mapa.Status.MemorySketch.x = null;
+                                Mapa.Status.MemorySketch.y = null;
+                                Mapa.Status.MemorySketch.vertexCount = c.length;
+
+                                document.getElementById('CCVertices').innerHTML = '';
+                            }
+
+
+                            g.on('change', function () {
+                                Mapa.Actions.drawNodes(this, false, Mapa.Status.WorkLayer);
+                            });
+
                         }
-            
-                        return g;
                     }
-                });
-            
-                Mapa.Interactions.interactions.draw.on('drawstart', function () {
-                    $(".CCs").each(function () {
-                        this.style.display = 'none';
-                    });
-            
-                    $("." + type).each(function () {
-                        this.style.display = 'block';
-                    });
+
+                    return g;
+                }
+            });
+
+            Mapa.Interactions.interactions.draw.on('drawstart', function () {
+                $(".CCs").each(function () {
+                    this.style.display = 'none';
                 });
 
-                Mapa.Interactions.interactions.draw.on('drawend', function (e) {
-                    if (e.feature.getGeometry().getType() === 'Polygon' && Mapa.Status.WorkLayer.geometry.order) {
-                        Mapa.Actions.orderVertex(e.feature,Mapa.Status.WorkLayer.geometry.order,Mapa.Status.WorkLayer.geometry.clockwise);
-                    }
-            
-                    Mapa.Actions.drawNodes(e.feature.getGeometry(), false, Mapa.Status.WorkLayer);
-            
-                    if (e.feature.getGeometry().type === 'Circle') {
-                        var parser = new jsts.io.OL3Parser();
-                        let radio = parser.read(new ol.geom.Polygon.fromCircle(e.feature.getGeometry(), 360).getLinearRing(0));
-                        //document.getElementById('Radio').value = radio;
-            
-                        Mapa.Status.WorkLayer.getSource().forEachFeature(function (feature) {
-                            if (feature.getGeometry().type === 'Circle') {
-                                let radio2 = parser.read(new ol.geom.Polygon.fromCircle(feature.getGeometry(), 360).getLinearRing(0));
-                                let intersection = radio.intersection(radio2);
-            
-                                let nfeature = new ol.Feature();
-                                nfeature.setGeometry(parser.write(intersection));
-                                Mapa.Status.WorkLayer.getSource().addFeature(nfeature);
-                            }
-                        });
-                    }
+                $("." + type).each(function () {
+                    this.style.display = 'block';
                 });
-            
-                Mapa.Map.addInteraction(Mapa.Interactions.interactions.draw);
+            });
 
-                Mapa.Actions.ActiveSnaps();
+            Mapa.Interactions.interactions.draw.on('drawend', function (e) {
+                if (e.feature.getGeometry().getType() === 'Polygon' && Mapa.Status.WorkLayer.geometry.order) {
+                    Mapa.Actions.orderVertex(e.feature, Mapa.Status.WorkLayer.geometry.order, Mapa.Status.WorkLayer.geometry.clockwise);
+                }
+
+                Mapa.Actions.drawNodes(e.feature.getGeometry(), false, Mapa.Status.WorkLayer);
+
+                if (e.feature.getGeometry().type === 'Circle') {
+                    var parser = new jsts.io.OL3Parser();
+                    let radio = parser.read(new ol.geom.Polygon.fromCircle(e.feature.getGeometry(), 360).getLinearRing(0));
+                    //document.getElementById('Radio').value = radio;
+
+                    Mapa.Status.WorkLayer.getSource().forEachFeature(function (feature) {
+                        if (feature.getGeometry().type === 'Circle') {
+                            let radio2 = parser.read(new ol.geom.Polygon.fromCircle(feature.getGeometry(), 360).getLinearRing(0));
+                            let intersection = radio.intersection(radio2);
+
+                            let nfeature = new ol.Feature();
+                            nfeature.setGeometry(parser.write(intersection));
+                            Mapa.Status.WorkLayer.getSource().addFeature(nfeature);
+                        }
+                    });
+                }
+            });
+
+            Mapa.Map.addInteraction(Mapa.Interactions.interactions.draw);
+
+            Mapa.Actions.ActiveSnaps();
         }
 
         Mapa.Actions.seleccionar = function () {
@@ -1311,7 +1408,7 @@ class SpatialComponent {
                     })
                 })
             });
-        
+
             Mapa.Interactions.interactions.select.on('select', function (e) {
                 Mapa.Actions.clearSketch();
 
@@ -1319,29 +1416,29 @@ class SpatialComponent {
                 Mapa.Status.Select.target = e.target;
                 Mapa.Status.Select.features = Mapa.Status.Select.target.getFeatures();
 
-                Mapa.Interactions.interactions.select.getFeatures().getArray().forEach(function (feature,i) {
+                Mapa.Interactions.interactions.select.getFeatures().getArray().forEach(function (feature, i) {
                     Mapa.Actions.drawNodes(feature.getGeometry(), true, Mapa.Status.WorkLayer);
-                    if (i===0) {
+                    if (i === 0) {
                         Mapa.Status.Select.isPolygon = feature.getGeometry().getType() === 'Polygon';
                     } else {
                         Mapa.Status.Select.isPolygon = Mapa.Status.Select.isPolygon && feature.getGeometry().getType() === 'Polygon';
                     }
                 });
 
-                if(Mapa.Status.Select.features.getArray().length === 1) {
+                if (Mapa.Status.Select.features.getArray().length === 1) {
                     Mapa.Status.MemorySketch.geometry = Mapa.Status.Select.features.getArray()[0].getGeometry();
                     let tools = document.getElementsByClassName('CCs')
 
-                    for (let i = 0; i < tools.length;i++){
-                        if(tools[i].className.indexOf(Mapa.Status.MemorySketch.geometry.getType()) === -1 ){
-                            tools[i].style.display='none';
+                    for (let i = 0; i < tools.length; i++) {
+                        if (tools[i].className.indexOf(Mapa.Status.MemorySketch.geometry.getType()) === -1) {
+                            tools[i].style.display = 'none';
                         } else {
-                            tools[i].style.display='';
-                        }   
+                            tools[i].style.display = '';
+                        }
                     }
 
                     Mapa.Actions.drawNodes(Mapa.Status.MemorySketch.geometry)
-                    Mapa.setCCtoGeometry(Mapa.Status.MemorySketch.geometry,true);
+                    Mapa.setCCtoGeometry(Mapa.Status.MemorySketch.geometry, true);
                 }
 
                 Mapa.Actions.UpdateUI();
@@ -1354,20 +1451,20 @@ class SpatialComponent {
                 freehandCondition: ol.events.condition.platformModifierKeyOnly,
                 stopClick: true
             });
-        
+
             Mapa.Map.addInteraction(Mapa.Interactions.interactions.modifySelect);
             Mapa.Map.addInteraction(Mapa.Interactions.interactions.select);
-        
+
             let snap = new ol.interaction.Snap({
                 features: Mapa.Interactions.interactions.select.getFeatures()
             });
-        
+
             Mapa.Interactions.snaps.push(snap);
             Mapa.Map.addInteraction(snap);
             Mapa.Actions.UpdateUI();
         };
 
-        Mapa.Actions.clearSketch = function() {
+        Mapa.Actions.clearSketch = function () {
             Mapa.Status.MemorySketch = {};
             Mapa.Status.MemorySketch.geometry = null;
             Mapa.Status.MemorySketch.v = null;
@@ -1378,39 +1475,39 @@ class SpatialComponent {
             Mapa.Status.MemorySketch.vertexCount = 0;
         }
 
-        Mapa.Actions.updateFusionList = function(){
+        Mapa.Actions.updateFusionList = function () {
 
         }
 
         Mapa.Actions.canFusionSimple = function (features, getGeometry) {
             let lista = [];
-        
-            features.forEach(function(feature,i){
+
+            features.forEach(function (feature, i) {
                 let polygon = turf.polygon(feature.getGeometry().getCoordinates());
                 lista.push(polygon);
             });
 
             let fs = turf.featureCollection(lista);
             let dissolve = turf.dissolve(fs);
-        
+
             if (dissolve.features.length !== 1) {
                 return false;
             } else {
                 if (getGeometry) {
                     let format = new ol.format.GeoJSON();
                     let geometry = format.readFeature(dissolve.features[0]).getGeometry();
-        
+
                     return geometry;
                 } else {
                     return true;
                 }
             }
         };
-        
+
         Mapa.Actions.fussion = function () {
             Mapa.UI.MapViewContainer.style.cursor = 'default';
-            Mapa.Status.Select.features.getArray().forEach(function (feature,i) {
-                if(i===0){
+            Mapa.Status.Select.features.getArray().forEach(function (feature, i) {
+                if (i === 0) {
                     let nuevo = Mapa.Actions.canFusionSimple(Mapa.Status.Select.features.getArray(), true);
                     feature.setGeometry(nuevo);
                 } else {
@@ -1428,34 +1525,34 @@ class SpatialComponent {
                 type: "LineString",
                 style: CutStyle()
             });
-        
+
             Mapa.Interactions.interactions.cutLinesInteraction.on('drawstart', function (event) {
                 Mapa.Interactions.interactions.select.setActive(false);
             });
-        
+
             Mapa.Interactions.interactions.cutLinesInteraction.on('drawend', function (event) {
                 //Mapa.Layers.Auxiliar.getSource().addFeature(event.feature);
 
                 let parser = new jsts.io.OL3Parser();
                 let cutLine = parser.read(event.feature.getGeometry());
                 let polygonizer = new jsts.operation.polygonize.Polygonizer();
-        
+
                 let lista = [];
 
                 Mapa.Status.Select.features.forEach(function (feature) {
                     let poly1 = parser.read(feature.getGeometry()).getExteriorRing();
                     let g = poly1.union(cutLine);
-        
+
                     polygonizer.add(g);
-        
+
                     let polygons = polygonizer.getPolygons();
                     let iterator;
                     let asignado = false;
                     for (iterator = polygons.iterator(); iterator.hasNext();) {
                         let polygon = iterator.next();
-        
+
                         let geometry = parser.write(polygon);
-                        if(!asignado){
+                        if (!asignado) {
                             feature.getGeometry().setCoordinates(geometry.getCoordinates());
                             asignado = true;
                         } else {
@@ -1467,29 +1564,29 @@ class SpatialComponent {
                     }
                     Mapa.Status.WorkLayer.getSource().addFeatures(lista);
                 });
-        
+
                 Mapa.Map.removeInteraction(Mapa.Interactions.interactions.cutLinesInteraction);
                 Mapa.Interactions.interactions.cutLinesInteraction = null;
                 Mapa.Interactions.interactions.select.setActive(true);
             });
-        
+
             Mapa.Map.addInteraction(Mapa.Interactions.interactions.cutLinesInteraction);
         };
 
-        Mapa.Actions.SetIDValidation = function(){
+        Mapa.Actions.SetIDValidation = function () {
 
-            let registros = httpGet(APIurl + '/predio/Predios_x_Tramite/' + Mapa.Params.id_tramite,'JSON')
+            let registros = httpGet(APIurl + '/predio/Predios_x_Tramite/' + Mapa.Params.id_tramite, 'JSON')
 
             document.getElementById('selId').innerHTML = "";
-            let noneOption =document.createElement('option');
+            let noneOption = document.createElement('option');
             noneOption.selected = true;
             noneOption.disabled = true;
-            noneOption.value="";
+            noneOption.value = "";
             noneOption.innerHTML = 'Seleccione el ID';
 
             document.getElementById('selId').appendChild(noneOption);
 
-            registros.forEach(function(r,i){
+            registros.forEach(function (r, i) {
                 if (r.predio_estatus_id === "3") {
                     let option = document.createElement('option');
                     option.value = r.id;
@@ -1505,7 +1602,7 @@ class SpatialComponent {
 
         Mapa.UI.Containter = null;
 
-        if(document.getElementById('Mapa')){
+        if (document.getElementById('Mapa')) {
             Mapa.UI.Containter = document.getElementById('Mapa');
         } else {
             Mapa.UI.Containter = document.createElement('div');
@@ -1541,21 +1638,21 @@ class SpatialComponent {
 
         Mapa.UI.TOCPannel = document.createElement('div');
         Mapa.UI.TOCPannel.className = 'no-space container';
-        Mapa.UI.TOCPannel.style.display='none';
+        Mapa.UI.TOCPannel.style.display = 'none';
 
         const TOCTitle = document.createElement('h4');
-        TOCTitle.classList='no-space w3-center';
+        TOCTitle.classList = 'no-space w3-center';
         TOCTitle.innerHTML = 'Capas de información';
 
         Mapa.UI.TOCPannel.appendChild(TOCTitle);
 
         Mapa.UI.IdentifyPannel = document.createElement('div');
         Mapa.UI.IdentifyPannel.className = 'no-space';
-        Mapa.UI.IdentifyPannel.style.display='none';
-        Mapa.UI.IdentifyPannel.maxHeight='900px';
+        Mapa.UI.IdentifyPannel.style.display = 'none';
+        Mapa.UI.IdentifyPannel.maxHeight = '900px';
 
         const IdentifyTitle = document.createElement('h4');
-        IdentifyTitle.classList='no-space w3-center';
+        IdentifyTitle.classList = 'no-space w3-center';
         IdentifyTitle.innerHTML = 'Identificación';
 
         let IdentifyResults = document.createElement('div');
@@ -1567,16 +1664,16 @@ class SpatialComponent {
 
         Mapa.UI.SearchPannel = document.createElement('div');
         Mapa.UI.SearchPannel.className = 'no-space';
-        Mapa.UI.SearchPannel.style.display='none';
-        Mapa.UI.SearchPannel.maxHeight='900px';
+        Mapa.UI.SearchPannel.style.display = 'none';
+        Mapa.UI.SearchPannel.maxHeight = '900px';
 
         let SearchResults = document.createElement('div');
         SearchResults.className = 'no-space w3-small container';
-        SearchResults.style.overflow='auto';
+        SearchResults.style.overflow = 'auto';
         SearchResults.id = 'SearchResults';
 
         const SearchTitle = document.createElement('h4');
-        SearchTitle.classList='no-space w3-center';
+        SearchTitle.classList = 'no-space w3-center';
         SearchTitle.innerHTML = 'Resultados';
 
         Mapa.UI.SearchPannel.appendChild(SearchTitle);
@@ -1586,9 +1683,9 @@ class SpatialComponent {
         Mapa.UI.Top.appendChild(Mapa.UI.ButtonBar);
         Mapa.UI.Top.appendChild(Mapa.UI.ToolBar);
 
-        
-        
-        
+
+
+
 
         Mapa.UI.Right.appendChild(Mapa.UI.RightBarIconsBar);
         Mapa.UI.RightContainer.appendChild(Mapa.UI.TOCPannel);
@@ -1609,7 +1706,7 @@ class SpatialComponent {
         const BackgroundLabel = document.createElement('span');
         BackgroundLabel.innerHTML = 'Color de fondo ';
         const BackGroundControl = document.createElement('input');
-        BackGroundControl.className ='w3-right';
+        BackGroundControl.className = 'w3-right';
         BackGroundControl.type = 'color';
 
         BackgroundContainer.appendChild(BackgroundLabel);
@@ -1619,9 +1716,9 @@ class SpatialComponent {
         BackGroundControl.onchange = function () {
             Mapa.UI.MapViewContainer.style.backgroundColor = this.value;
         };
-    
+
         BackGroundControl.value = '#ffffff'; //Mapa.UI.JSONConfig.MapView.BackgroundColor;
-	//console.log(Mapa.UI.JSONConfig.MapView.BackgroundColor);
+        //console.log(Mapa.UI.JSONConfig.MapView.BackgroundColor);
         BackGroundControl.onchange();
 
         Mapa.initUI();
@@ -1641,13 +1738,13 @@ class SpatialComponent {
             })
         });
 
-        if(Mapa.JSONConfig.Principal){
+        if (Mapa.JSONConfig.Principal) {
             Mapa.Actions.setPrincipal(Mapa.JSONConfig.Principal);
         }
 
 
         let source = new ol.source.Vector();
-    
+
         /*
         source.on('change', function () {
             source.forEachFeature(function (feature) {
@@ -1656,19 +1753,19 @@ class SpatialComponent {
                 }
             });
         });*/
-    
+
         Mapa.IdentifyLayer = new ol.layer.Vector({
             id: 'Identify',
             source: source,
             style: getDrawFeatureStyle()
         });
-    
+
         Mapa.Map.addLayer(Mapa.IdentifyLayer);
 
         return Mapa;
     }
 
-    createGroup(GroupDef){
+    createGroup(GroupDef) {
         const Mapa = this;
 
         let GroupContainer = document.createElement('div')
@@ -1700,11 +1797,11 @@ class SpatialComponent {
         GroupTransparency.max = 100;
         GroupTransparency.value = GroupDef.status.opacity * 100;
         GroupTransparency.step = 1;
-        GroupTransparency.style.width ='50px';
+        GroupTransparency.style.width = '50px';
         GroupTransparency.style.paddingLeft = '0px';
         GroupTransparency.style.paddingRight = '0px';
         GroupTransparency.setAttribute('title', 'Cambia la opacidad del grupo');
-    
+
         let GroupLabel = document.createElement('div');
         GroupLabel.className = 'w3-bar-item GroupLabel';
         GroupLabel.style.width = '220px';
@@ -1720,7 +1817,7 @@ class SpatialComponent {
 
         let Layers = [];
 
-        for(let layerDef in GroupDef.layers){
+        for (let layerDef in GroupDef.layers) {
             let Layer = Mapa.createLayer(GroupDef.layers[layerDef]);
             Layers.push(Layer);
             if (!GroupDef.layers[layerDef].status.inTOC === undefined || GroupDef.layers[layerDef].status.inTOC !== false) {
@@ -1741,7 +1838,7 @@ class SpatialComponent {
             GroupExpand.innerHTML = LayerGroupContainer.style.display === 'none' ? '<i class="far fa-lg fa-plus-square no-space"></i>' : '<i class="far fa-lg fa-minus-square no-space"></i>';
         };
 
-        GroupVisible.addEventListener('change',function () {
+        GroupVisible.addEventListener('change', function () {
             Group.setVisible(!Group.getVisible());
         });
 
@@ -1756,7 +1853,7 @@ class SpatialComponent {
         return Group;
     }
 
-    createLayer(LayerDef){
+    createLayer(LayerDef) {
         const Mapa = this;
 
         let Layer = null;
@@ -1765,7 +1862,7 @@ class SpatialComponent {
             case 'OSM':
                 Layer = new ol.layer.Tile({
                     source: new ol.source.OSM()
-                  }); 
+                });
 
                 break;
             case 'XYZ':
@@ -1808,28 +1905,18 @@ class SpatialComponent {
                 break;
             case 'Vector':
                 let VecFeatures = [];
-                if (LayerDef.actions.get){
+                if (LayerDef.actions.get) {
                     let url = LayerDef.actions.get.url;
 
-                    Layer.actions.get.params.forEach(function(p){
+                    Layer.actions.get.params.forEach(function (p) {
                         url = url.replace(p, Mapa.Params[p]);
                     });
-    
-                    VecFeatures = httpGet(url,'JSON');
+
+                    VecFeatures = httpGet(url, 'JSON');
                 }
-                
+
 
                 Layer = new ol.layer.Vector({
-			/*
-                    style: function (feature) {
-                        if(LayerDef.styles) {
-                            if (LayerDef.styles.styles[LayerDef.styles.default].type === 'function') {
-                                return window[JSONLayerDefinition.styles.default](feature);
-                            } else {
-                                return createStyle(JSONLayerDefinition.styles.default, oMapa);
-                            }
-                        }
-                    },*/
                     source: new ol.source.Vector({
                         crossOrigin: "Anonymous",
                         features: VecFeatures
@@ -1847,22 +1934,22 @@ class SpatialComponent {
 
                 if (LayerDef.actions.get) {
                     let url = LayerDef.actions.get.url;
-                    LayerDef.actions.get.params.forEach(function(p){
-                        url = url.replace(p,Mapa.Params[p]);
+                    LayerDef.actions.get.params.forEach(function (p) {
+                        url = url.replace(p, Mapa.Params[p]);
                     });
-    
-                    MVCFeatures = httpGet(url,'JSON');
 
-                    switch (LayerDef.source.subType){
+                    MVCFeatures = httpGet(url, 'JSON');
+
+                    switch (LayerDef.source.subType) {
                         case ('WKT'):
                             format = new ol.format.WKT();
 
-                            MVCFeatures.forEach(function(f){
-                                
+                            MVCFeatures.forEach(function (f) {
+
                                 let Geometry = null;
 
-                                if(LayerDef.source.SRID !== Mapa.JSONConfig.SpatialReference.SRID ) {
-                                    Geometry = format.readGeometry(f.geom,{
+                                if (LayerDef.source.SRID !== Mapa.JSONConfig.SpatialReference.SRID) {
+                                    Geometry = format.readGeometry(f.geom, {
                                         dataProjection: LayerDef.source.SRID,
                                         featureProjection: Mapa.JSONConfig.SpatialReference.SRID
                                     });
@@ -1878,11 +1965,19 @@ class SpatialComponent {
 
                                 Feature.setId(id);
 
-                                for(let key in f){
-                                    if(key !== 'geom') {
-                                        Feature.set(key,f[key]);
+                                for (let key in f) {
+                                    if (key !== 'geom') {
+                                        Feature.set(key, f[key]);
                                     }
                                 }
+
+                                if (LayerDef.id === 'VectorPredios') {
+                                    const style = stylePredios(Feature.get('clave_catastral'));
+                                    Feature.setStyle(style);
+                                } else if (LayerDef.id === 'VectorPredio') {
+                                    const style = StylePredioSeleccionado(Feature.get('clave_catastral'));
+                                    Feature.setStyle(style);
+                                } 
 
                                 MVCSource.addFeature(Feature);
                             });
@@ -1895,28 +1990,30 @@ class SpatialComponent {
                     }
                 }
 
-                Layer = new ol.layer.Vector({
-			/*
-                    style: function (feature) {
-                        if(LayerDef.styles) {
-                            if (LayerDef.styles.styles[LayerDef.styles.default].type === 'function') {
-                                return window[JSONLayerDefinition.styles.default](feature);
-                            } else {
-                                return createStyle(JSONLayerDefinition.styles.default, oMapa);
-                            }
-                        }
-                    },**/
-                    source: MVCSource
-                });
+                if (LayerDef.id === 'VectorPredios') {
+                    Layer = new ol.layer.Vector({
+                        style: stylePredios(),
+                        source: MVCSource
+                    });
+                } else if (LayerDef.id === 'VectorPredio') {
+                    Layer = new ol.layer.Vector({
+                        style: StylePredioSeleccionado(),
+                        source: MVCSource
+                    });
+                } else {
+                    Layer = new ol.layer.Vector({
+                        source: MVCSource
+                    });
+                }
 
-                if (LayerDef.editable && LayerDef.actions && LayerDef.actions.save) { 
-                    if(Layer.id === 'VectorPredio') { 
-                        if(!data.id) {
+                if (LayerDef.editable && LayerDef.actions && LayerDef.actions.save) {
+                    if (Layer.id === 'VectorPredio') {
+                        if (!data.id) {
                             data.id = Mapa.Params.id;
                         }
                     }
 
-                    if(Layer.id === 'VectorConstruccion'){
+                    if (Layer.id === 'VectorConstruccion') {
                         // Analisis de construcciones vs Predios
                         Layer.getSource().on('addfeature', function (c) {
                             let ConstruccionEnPredio = false;
@@ -1932,49 +2029,46 @@ class SpatialComponent {
                         });
                     }
 
-                    Layer.Save = function() {
-			let url = LayerDef.actions.save.url;
+                    Layer.Save = function () {
+                        let url = LayerDef.actions.save.url;
                         let data = [];
 
-                        LayerDef.actions.save.params.forEach(function(p){
+                        LayerDef.actions.save.params.forEach(function (p) {
                             url = url.replace(p, Mapa.Params[p]);
                         });
 
-                        Layer.getSource().forEachFeature(function(feature){
+                        Layer.getSource().forEachFeature(function (feature) {
                             let r = {}
-                            for(let key in feature.getProperties()){
-                                if(key === 'geometry') {
+                            for (let key in feature.getProperties()) {
+                                if (key === 'geometry') {
                                     r['wkt'] = format.writeGeometry(feature.getGeometry());
                                 } else {
                                     r[key] = feature.get(key);
                                 }
-                                if(Layer.id === 'VectorPredio' && !r.id){
+                                if (Layer.id === 'VectorPredio' && !r.id) {
                                     r.id = Mapa.Params.id
                                 }
                             }
                             data.push(r);
                         });
-                       
-			console.log(data);
-			console.log(url);
 
-                        const response = fetch(url,{
-                            method:'POST',
+                        const response = fetch(url, {
+                            method: 'POST',
                             data: data,
                             body: JSON.stringify(data),
-                            headers:{
-                                'Content-Type' : 'application/json'
+                            headers: {
+                                'Content-Type': 'application/json'
                             }
                         });
 
-                        if(response.status > 300) {
+                        if (response.status > 300) {
                             console.log(responseText);
                         }
                     }
                 }
 
-                if(LayerDef.actions.extent && MVCFeatures.length>0){
-                    Mapa.Actions.ZoomToWorkExtent = function(){
+                if (LayerDef.actions.extent && MVCFeatures.length > 0) {
+                    Mapa.Actions.ZoomToWorkExtent = function () {
                         Mapa.Map.getView().fit(Layer.getSource().getExtent(), Mapa.Map.getSize());
                     };
                 }
@@ -1999,11 +2093,11 @@ class SpatialComponent {
         LayerControl.className = 'w3-bar no-space LayerControl';
 
         let LayerVisible = document.createElement('input');
-        LayerVisible.type='checkbox';
+        LayerVisible.type = 'checkbox';
         LayerVisible.className = "w3-bar-item w3-check no-space LayerVisible";
         LayerVisible.setAttribute('title', 'Apaga/Enciende la capa');
-        
-        if(Layer.getVisible()) {
+
+        if (Layer.getVisible()) {
             LayerVisible.checked = 'checked';
         }
 
@@ -2018,11 +2112,11 @@ class SpatialComponent {
         LayerTransparency.max = 100;
         LayerTransparency.value = LayerDef.status.opacity * 100;
         LayerTransparency.step = 1;
-        LayerTransparency.style.width ='50px';
+        LayerTransparency.style.width = '50px';
         LayerTransparency.style.paddingLeft = '0px';
         LayerTransparency.style.paddingRight = '0px';
         LayerTransparency.setAttribute('title', 'Cambia la opacidad de la capa');
-    
+
         LayerTransparency.onchange = function () {
             Layer.setOpacity(this.value / 100);
         };
@@ -2038,7 +2132,7 @@ class SpatialComponent {
 
         LayerContainer.appendChild(LayerControl);
 
-        if(Mapa.UI.Controls.selEditLayers && Layer.editable){
+        if (Mapa.UI.Controls.selEditLayers && Layer.editable) {
             let optionEdit = document.createElement('option');
             optionEdit.innerHTML = Layer.name;
             optionEdit.setAttribute('value', Layer.id);
@@ -2056,14 +2150,14 @@ class SpatialComponent {
         Mapa.Layers[Layer.id] = Layer;
 
         return Layer;
-    } 
+    }
 
-    initLayers(){
+    initLayers() {
         const Mapa = this;
 
         let Groups = [];
 
-        for (let groupDef in Mapa.Layers.JSONConfig){
+        for (let groupDef in Mapa.Layers.JSONConfig) {
             let Group = Mapa.createGroup(Mapa.Layers.JSONConfig[groupDef]);
             Groups.push(Group);
         }
@@ -2083,11 +2177,11 @@ class SpatialComponent {
                 });
             }
         });
-    
+
         return lyr;
     };
-  
-    initControl(def){
+
+    initControl(def) {
         const Mapa = this;
 
         let control = {};
@@ -2097,69 +2191,69 @@ class SpatialComponent {
 
         switch (def.identity.type) {
             case 'button':
-                control.html.onclick = function(){
-                    if(Mapa.UI.Function === 'Help'){
-                        window.open(def.help.urlTechHelp,"_blank");
-                    } else if (Mapa.UI.Function === 'Legal'){
-                        window.open(def.help.legalHelp,"_blank");
+                control.html.onclick = function () {
+                    if (Mapa.UI.Function === 'Help') {
+                        window.open(def.help.urlTechHelp, "_blank");
+                    } else if (Mapa.UI.Function === 'Legal') {
+                        window.open(def.help.legalHelp, "_blank");
                     } else {
-                        if(def.actions.function){
+                        if (def.actions.function) {
                             eval(def.actions.function);
                         }
                     }
                 }
                 break;
             case 'select':
-                control.html.onchange = function(){
+                control.html.onchange = function () {
                     eval(def.actions.function);
-                }            
+                }
                 break;
             case 'input':
-                if(def.style.placeholder) {
+                if (def.style.placeholder) {
                     control.html.placeholder = def.style.placeholder;
                 }
-                if(def.actions.function) {
-                    control.html.onchange = function(){
+                if (def.actions.function) {
+                    control.html.onchange = function () {
                         eval(def.actions.function);
-                    }            
+                    }
                 }
                 break;
         }
 
-        control.html.innerHTML += def.style.icon ? '<i class="' + def.style.icon + '"></i>': "";
+        control.html.innerHTML += def.style.icon ? '<i class="' + def.style.icon + '"></i>' : "";
         control.html.innerHTML += def.style.text ? def.style.Text : "";
 
-        if(def.help.tip){
+        if (def.help.tip) {
             control.html.setAttribute('title', def.help.tip);
         }
-        
 
-        if(def.validation){
-            if(def.validation.conditionEnable || def.validation.conditionShow){
-                control.update = function(){
-                    if(def.validation.conditionShow){
+
+        if (def.validation) {
+            if (def.validation.conditionEnable || def.validation.conditionShow) {
+                control.update = function () {
+                    if (def.validation.conditionShow) {
                         control.html.style.display = eval(def.validation.conditionShow) === true ? '' : 'none';
                     }
 
-                    
-                    if(def.validation.conditionEnable){
+
+                    if (def.validation.conditionEnable) {
                         control.html.disabled = !(eval(def.validation.conditionEnable) === true);
 
-                        if(eval(def.validation.conditionEnable) === true) {
+                        if (eval(def.validation.conditionEnable) === true) {
                             control.html.removeAttribute('disabled');
                         } else {
-                            control.html.setAttribute('disabled',true);
+                            control.html.setAttribute('disabled', true);
                         }
                     }
                 }
             }
-    
+
         }
 
         return control;
     }
 
-    initUI(){
+    initUI() {
         const Mapa = this;
 
         this.initMenuBar();
@@ -2167,16 +2261,16 @@ class SpatialComponent {
         this.initToolBar();
     }
 
-    initMenuBar(){
+    initMenuBar() {
 
     }
 
-    initButtonBar(){
+    initButtonBar() {
         const Mapa = this;
         const ButtonBar = Mapa.UI.ButtonBar;
 
-        if(Mapa.UI.JSONConfig.ButtonBar && Mapa.UI.JSONConfig.ButtonBar !== undefined){
-            for(let ctl in Mapa.UI.JSONConfig.ButtonBar.Controls){
+        if (Mapa.UI.JSONConfig.ButtonBar && Mapa.UI.JSONConfig.ButtonBar !== undefined) {
+            for (let ctl in Mapa.UI.JSONConfig.ButtonBar.Controls) {
                 let control = Mapa.initControl(Mapa.UI.JSONConfig.ButtonBar.Controls[ctl]);
                 Mapa.UI.Controls[ctl] = control;
                 ButtonBar.appendChild(Mapa.UI.Controls[ctl].html);
@@ -2184,12 +2278,12 @@ class SpatialComponent {
         }
     }
 
-    initToolBar(){
+    initToolBar() {
         const Mapa = this;
         const ToolBar = Mapa.UI.ToolBar;
 
-        if(Mapa.UI.JSONConfig.ToolBar && Mapa.UI.JSONConfig.ToolBar !== undefined){
-            for(let ctl in Mapa.UI.JSONConfig.ToolBar.Controls){
+        if (Mapa.UI.JSONConfig.ToolBar && Mapa.UI.JSONConfig.ToolBar !== undefined) {
+            for (let ctl in Mapa.UI.JSONConfig.ToolBar.Controls) {
                 let control = Mapa.initControl(Mapa.UI.JSONConfig.ToolBar.Controls[ctl]);
                 Mapa.UI.Controls[ctl] = control;
                 ToolBar.appendChild(Mapa.UI.Controls[ctl].html);
@@ -2197,24 +2291,24 @@ class SpatialComponent {
         }
     }
 
-    MathTools(){
+    MathTools() {
         const Mapa = this;
 
         Mapa.Math.M = function (x1, y1, x2, y2) {
             var M = (y2 - y1) / (x2 - x1);
             return M;
         };
-        
+
         Mapa.Math.G2R = function (G) {
             G = (Math.PI / 180) * G;
             return G;
         };
-        
+
         Mapa.Math.R2G = function (R) {
             R = (R * 180) / Math.PI;
             return R;
         };
-        
+
         Mapa.Math.A = function (m, x1, y1, x2, y2) {
             var A = Math.abs(Mapa.Math.R2G(Math.atan(m)));
             if (x2 < x1 & y2 > y1) {
@@ -2227,17 +2321,17 @@ class SpatialComponent {
             }
             return A;
         };
-        
+
         Mapa.Math.D = function (x1, y1, x2, y2) {
             var D = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
             return D;
         };
-        
+
         Mapa.Math.X = function (D, A) {
             var IX = D * (Math.cos(Mapa.Math.G2R(A)));
             return IX;
         };
-        
+
         Mapa.Math.Y = function (D, A) {
             var IY = D * (Math.sin(Mapa.Math.G2R(A)));
             return IY;
@@ -2245,11 +2339,11 @@ class SpatialComponent {
 
         Mapa.Math.formatNumber = function (number, decimals) {
             decimals = decimals ? decimals : 0;
-        
+
             if ('string' === typeof number) {
                 number = parseFloat(number);
             }
-        
+
             if ('number' === typeof number) {
                 return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
@@ -2258,10 +2352,10 @@ class SpatialComponent {
         Mapa.Math.formatLength = function (line) {
             return Mapa.Math.formatNumber(parseFloat(Math.round(line.getLength() * 100) / 100), 2) + ' m';
         };
-        
+
     }
 
-    setCCtoGeometry(g,editable) {
+    setCCtoGeometry(g, editable) {
         const Mapa = this;
         let type = g.getType();
         let c = g.getCoordinates();
@@ -2272,9 +2366,9 @@ class SpatialComponent {
         if (type === 'LineString' || type === 'Polygon') {
 
             let cs = type === 'LineString' ? c : c[0];
-    
+
             let cx1, cy1, cx2, cy2, ca, cd;
-    
+
             if (Mapa.Status.MemorySketch.vertexCount !== cs.length) {
                 Mapa.Status.MemorySketch.v = null;
                 Mapa.Status.MemorySketch.a = null;
@@ -2283,19 +2377,19 @@ class SpatialComponent {
                 Mapa.Status.MemorySketch.y = null;
                 Mapa.Status.MemorySketch.vertexCount = cs.length;
             }
-    
+
             cs.forEach(function (coord, index) {
                 let row = Mapa.addPolygonVertexRow(index, index === (cs.length - 1) ? true : false);
 
                 cx2 = coord[0];
                 cy2 = coord[1];
-    
+
                 if (index > 0) {
                     ca = Mapa.Math.A(Mapa.Math.M(cx1, cy1, cx2, cy2), cx1, cy1, cx2, cy2);
                     cd = Mapa.Math.D(cx1, cy1, cx2, cy2);
                 }
-    
-    
+
+
                 if (index > 0) {
                     if (editable) {
                         row.children[2].children[0].value = Math.round(ca * 100) / 100;
@@ -2307,7 +2401,7 @@ class SpatialComponent {
                         row.children[3].innerHTML = Math.round(cd * 100) / 100;
                     }
                 }
-    
+
                 if (editable) {
                     row.children[4].children[0].value = Math.round(cx2 * 100) / 100;
                     row.children[5].children[0].value = Math.round(cy2 * 100) / 100;
@@ -2317,7 +2411,7 @@ class SpatialComponent {
                     row.children[5].removeChild(row.children[5].children[0]);
                     row.children[5].innerHTML = Math.round(cy2 * 100) / 100;
                 }
-    
+
                 cx1 = cx2;
                 cy1 = cy2;
             });
@@ -2343,14 +2437,14 @@ class SpatialComponent {
         } else {
             row.style.backgroundColor = 'lightgrey';
         }
-    
+
         let tdCommand = document.createElement('td');
         tdCommand.className = 'no-space';
         tdCommand.style.width = '50px';
-    
+
         let DelVertex = document.createElement('button');
         DelVertex.className = 'w3-button no-space';
-    
+
         DelVertex.setAttribute('data-toggle', 'tooltip');
         DelVertex.setAttribute('data-placement', 'top');
         DelVertex.setAttribute('title', 'Eliminar vertice ' + (i + 1));
@@ -2368,27 +2462,27 @@ class SpatialComponent {
                     coords.splice(i, 1);
                     Mapa.Status.MemorySketch.geometry.setCoordinates(coords);
                 }
-    
+
                 this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement);
                 Mapa.setCCtoGeometry(Mapa.Status.MemorySketch.geometry);
                 Mapa.Actions.drawNodes(Mapa.Status.MemorySketch.geometry, false, Mapa.Status.WorkLayer);
             };
         }
         DelVertex.innerHTML = '<i class="fas fa-times-circle"></i>';
-    
+
         tdCommand.appendChild(DelVertex);
-    
+
         row.appendChild(tdCommand);
-    
+
         let tdVId = document.createElement('td');
         tdVId.className = 'w3-center';
         tdVId.style.width = '60px';
         tdVId.innerHTML = fin ? 1 : i + 1;
-    
+
         row.appendChild(tdVId);
-    
+
         let tdA = document.createElement('td');
-    
+
         if (i > 0) {
             let setAngle = document.createElement('input');
             setAngle.className = 'w3-center';
@@ -2400,20 +2494,20 @@ class SpatialComponent {
             setAngle.setAttribute('data-toggle', 'tooltip');
             setAngle.setAttribute('data-placement', 'top');
             setAngle.setAttribute('title', 'Cambiar ángulo entre vertices: ' + i + ' - ' + (i + 1));
-    
+
             if (!Mapa.Status.WorkLayer) {
                 setAngle.disabled = true;
             } else {
                 setAngle.addEventListener('change', function () {
                     Mapa.Status.MemorySketch.a = isNaN(this.value) ? null : this.value;
-    
+
                     if (Mapa.Status.MemorySketch.a) {
                         Mapa.Status.MemorySketch.v = i;
                         Mapa.Status.MemorySketch.x = null;
                         Mapa.Status.MemorySketch.y = null;
-    
+
                         let cx1, cy1, cx2, cy2, cd, ca;
-    
+
                         if (Mapa.Status.MemorySketch.geometry.getType() === 'Polygon') {
                             cx1 = Mapa.Status.MemorySketch.geometry.getCoordinates()[0][i - 1][0];
                             cy1 = Mapa.Status.MemorySketch.geometry.getCoordinates()[0][i - 1][1];
@@ -2425,9 +2519,9 @@ class SpatialComponent {
                             cx2 = Mapa.Status.MemorySketch.geometry.getCoordinates()[i][0];
                             cy2 = Mapa.Status.MemorySketch.geometry.getCoordinates()[i][1];
                         }
-    
+
                         ca = Mapa.Status.MemorySketch.a;
-                        cd = Mapa.Status.MemorySketch.d ? Mapa.Status.MemorySketch.d : Math.round(Mapa.Math.D(cx1, cy1, cx2, cy2),2);
+                        cd = Mapa.Status.MemorySketch.d ? Mapa.Status.MemorySketch.d : Math.round(Mapa.Math.D(cx1, cy1, cx2, cy2), 2);
 
                         cx2 = Math.round((cx1 + Mapa.Math.X(cd, ca)) * 100 / 100, 2);
                         cy2 = Math.round((cy1 + Mapa.Math.Y(cd, ca)) * 100 / 100, 2);
@@ -2444,14 +2538,14 @@ class SpatialComponent {
                     }
                 });
             }
-    
+
             tdA.appendChild(setAngle);
         }
-    
+
         row.appendChild(tdA);
-    
+
         let tdD = document.createElement('td');
-    
+
         if (i > 0) {
             let setLength = document.createElement('input');
             setLength.className = 'w3-right-align';
@@ -2460,20 +2554,20 @@ class SpatialComponent {
             setLength.setAttribute('data-toggle', 'tooltip');
             setLength.setAttribute('data-placement', 'top');
             setLength.setAttribute('title', 'Cambiar distancia ángulo entre vertices: ' + i + ' - ' + (i + 1));
-    
+
             if (!Mapa.Status.WorkLayer) {
                 setLength.disabled = true;
             } else {
                 setLength.addEventListener('change', function () {
                     Mapa.Status.MemorySketch.d = isNaN(this.value) ? null : this.value;
-    
+
                     if (Mapa.Status.MemorySketch.d) {
                         Mapa.Status.MemorySketch.v = i;
                         Mapa.Status.MemorySketch.x = null;
                         Mapa.Status.MemorySketch.y = null;
-    
+
                         let cx1, cy1, cx2, cy2, cd, ca;
-    
+
                         if (Mapa.Status.MemorySketch.geometry.getType() === 'Polygon') {
                             cx1 = Mapa.Status.MemorySketch.geometry.getCoordinates()[0][i - 1][0];
                             cy1 = Mapa.Status.MemorySketch.geometry.getCoordinates()[0][i - 1][1];
@@ -2485,15 +2579,15 @@ class SpatialComponent {
                             cx2 = Mapa.Status.MemorySketch.geometry.getCoordinates()[i][0];
                             cy2 = Mapa.Status.MemorySketch.geometry.getCoordinates()[i][1];
                         }
-    
+
                         cd = Mapa.Status.MemorySketch.d;
                         ca = Mapa.Status.MemorySketch.a ? Mapa.Status.MemorySketch.a : Mapa.Math.A(Mapa.Math.M(cx1, cy1, cx2, cy2), cx1, cy1, cx2, cy2);
-    
+
                         cx2 = cx1 + Mapa.Math.X(cd, ca);
                         cy2 = cy1 + Mapa.Math.Y(cd, ca);
-    
+
                         let coords = Mapa.Status.MemorySketch.geometry.getCoordinates();
-    
+
                         if (Mapa.Status.MemorySketch.geometry.getType() === 'Polygon') {
                             coords[0][i] = [cx2, cy2];
                             Mapa.Status.MemorySketch.geometry.setCoordinates(coords);
@@ -2507,9 +2601,9 @@ class SpatialComponent {
             tdD.appendChild(setLength);
         }
         row.appendChild(tdD);
-    
+
         let tdCX = document.createElement('td');
-    
+
         let setCX = document.createElement('input');
         setCX.className = 'w3-right-align';
         setCX.style.width = '100px';
@@ -2517,23 +2611,23 @@ class SpatialComponent {
         setCX.setAttribute('data-toggle', 'tooltip');
         setCX.setAttribute('data-placement', 'top');
         setCX.setAttribute('title', 'Cambiar la coordendada X del vertice: ' + (i + 1));
-    
+
         if (!Mapa.Status.WorkLayer) {
             setCX.disabled = true;
         } else {
             setCX.addEventListener('change', function () {
                 Mapa.Status.MemorySketch.x = isNaN(this.value) ? null : this.value;
                 if (Mapa.Status.MemorySketch.x) {
-    
+
                     Mapa.Status.MemorySketch.v = i;
                     Mapa.Status.MemorySketch.d = null;
                     Mapa.Status.MemorySketch.a = null;
-    
+
                     let cx1, cy1, cx2, cy2, cd, ca;
-    
+
                     cx2 = Mapa.Status.MemorySketch.x;
                     cy2 = Mapa.Status.MemorySketch.geometry.getCoordinates()[0][i][1];
-    
+
                     if (i > 0) {
                         if (Mapa.Status.MemorySketch.geometry.getType() === 'Polygon') {
                             cx1 = Mapa.Status.MemorySketch.geometry.getCoordinates()[0][i - 1][0];
@@ -2542,16 +2636,16 @@ class SpatialComponent {
                             cx1 = Mapa.Status.MemorySketch.geometry.getCoordinates()[i - 1][0];
                             cy1 = Mapa.Status.MemorySketch.geometry.getCoordinates()[i - 1][1];
                         }
-    
+
                         cd = Mapa.Math.D(cx1, cy1, cx2, cy2);
                         ca = Mapa.Math.A(Mapa.Math.M(cx1, cy1, cx2, cy2), cx1, cy1, cx2, cy2);
-    
+
                         this.parentElement.parentElement.children[2].children[0].value = Math.round(ca * 100) / 100;
                         this.parentElement.parentElement.children[3].children[0].value = Math.round(cd * 100) / 100;
                     }
-    
+
                     let coords = Mapa.Status.MemorySketch.geometry.getCoordinates();
-    
+
                     if (Mapa.Status.MemorySketch.geometry.getType() === 'Polygon') {
                         coords[0][i][0] = cx2;
                         Mapa.Status.MemorySketch.geometry.setCoordinates(coords);
@@ -2564,10 +2658,10 @@ class SpatialComponent {
         }
         tdCX.appendChild(setCX);
         row.appendChild(tdCX);
-    
-    
+
+
         let tdCY = document.createElement('td');
-    
+
         let setCY = document.createElement('input');
         setCY.className = 'w3-right-align';
         setCY.style.width = '100px';
@@ -2575,23 +2669,23 @@ class SpatialComponent {
         setCY.setAttribute('data-toggle', 'tooltip');
         setCY.setAttribute('data-placement', 'top');
         setCY.setAttribute('title', 'Cambiar la coordendada Y del vertice: ' + (i + 1));
-    
+
         if (!Mapa.Status.WorkLayer) {
             setCY.disabled = true;
         } else {
             setCY.addEventListener('change', function () {
                 Mapa.Status.MemorySketch.y = isNaN(this.value) ? null : this.value;
                 if (Mapa.Status.MemorySketch.y) {
-    
+
                     Mapa.Status.MemorySketch.v = i;
                     Mapa.Status.MemorySketch.d = null;
                     Mapa.Status.MemorySketch.a = null;
-    
+
                     let cx1, cy1, cx2, cy2, cd, ca;
-    
+
                     cx2 = Mapa.Status.MemorySketch.geometry.getCoordinates()[0][i][0];
                     cy2 = Mapa.Status.MemorySketch.y;
-    
+
                     if (i > 0) {
                         if (Mapa.Status.MemorySketch.geometry.getType() === 'Polygon') {
                             cx1 = Mapa.Status.MemorySketch.geometry.getCoordinates()[0][i - 1][0];
@@ -2600,16 +2694,16 @@ class SpatialComponent {
                             cx1 = Mapa.Status.MemorySketch.geometry.getCoordinates()[i - 1][0];
                             cy1 = Mapa.Status.MemorySketch.geometry.getCoordinates()[i - 1][1];
                         }
-    
+
                         cd = Mapa.Math.D(cx1, cy1, cx2, cy2);
                         ca = Mapa.Math.A(Mapa.Math.M(cx1, cy1, cx2, cy2), cx1, cy1, cx2, cy2);
-    
+
                         this.parentElement.parentElement.children[2].children[0].value = Math.round(ca * 100) / 100;
                         this.parentElement.parentElement.children[3].children[0].value = Math.round(cd * 100) / 100;
                     }
-    
+
                     let coords = Mapa.Status.MemorySketch.geometry.getCoordinates();
-    
+
                     if (Mapa.Status.MemorySketch.geometry.getType() === 'Polygon') {
                         coords[0][i][1] = cy2;
                         Mapa.Status.MemorySketch.geometry.setCoordinates(coords);
@@ -2620,12 +2714,12 @@ class SpatialComponent {
                 }
             });
         }
-    
+
         tdCY.appendChild(setCY);
         row.appendChild(tdCY);
-    
+
         document.getElementById('CCVertices').appendChild(row);
-  
+
         return row;
     };
 }
